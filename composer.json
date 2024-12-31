@@ -1,0 +1,15 @@
+{
+    "name": "mouadhallaffou/devto-cms",
+    "autoload": {
+        "psr-4": {
+            "Mouadhallaffou\\DevtoCms\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "MouadHallaffou",
+            "email": "mouadhallaffou@gmail.com"
+        }
+    ],
+    "require": {}
+}
