@@ -2,7 +2,9 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Mouadhallaffou\DevtoCms\Article;
+use App\Database;
+use App\User;
 
-$article = new Article();
-echo $article->getTitle();
+
+$db = new Database();
+$user = new User();
