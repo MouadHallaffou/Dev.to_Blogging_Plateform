@@ -1,21 +1,28 @@
 <?php
 
-$host = 'localhost';
-$db = 'devto';
-$user = 'root';
-$password = '';
-$charset = 'utf8mb4';
+namespace App\Database;
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+use PDO;
+use PDOException;
 
-try {
-    $pdo = new PDO($dsn, $user, $password, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ]);
-    echo "Connexion réussie à la base de données!";
-} catch (PDOException $e) {
-    throw new PDOException($e->getMessage(), (int)$e->getCode());
+class Database
+{
+    private $host = "localhost"; 
+    private $dbname = "devblog_db"; 
+    private $username = "root"; 
+    private $password = ""; 
+    private $connection; 
+
+    public function connect(): PDO
+    {
+        try {
+            $dsn = "mysql:host={$this->host};dbname={$this->dbname};charset=utf8mb4";
+            $this->connection = new PDO($dsn, $this->username, $this->password);
+            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            throw new PDOException("Erreur de connexion : " . $e->getMessage());
+        }
+
+        return $this->connection;
+    }
 }
-
-
