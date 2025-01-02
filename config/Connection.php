@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Config;
 
 use PDO;
@@ -20,7 +19,7 @@ class Database
             $this->connection = new PDO($dsn, $this->username, $this->password);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            throw new PDOException("Erreur en connexion : " . $e->getMessage());
+            throw new PDOException("Erreur de connexion : " . $e->getMessage());
         }
 
         return $this->connection;

@@ -2,7 +2,7 @@
     "name": "mouadhallaffou/devto-cms",
     "autoload": {
         "psr-4": {
-            "Mouadhallaffou\\DevtoCms\\": "src/"
+            "App\\": "src/"
         }
     },
     "authors": [
@@ -13,4 +13,3 @@
     ],
     "require": {}
 }
-

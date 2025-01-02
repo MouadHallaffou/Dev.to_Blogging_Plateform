@@ -10,7 +10,7 @@ class Category extends BaseModel {
         return $this->insertEntry($this->table, ['name' => $name]);
     }
 
-    public function getAll() {
+    public function getAllCategory() {
         return $this->selectEntries($this->table);
     }
 

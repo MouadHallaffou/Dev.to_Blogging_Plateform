@@ -1,14 +1,14 @@
 <?php
 require_once '../config/connection.php';
-require_once '../src/Category.php';
+require_once '../src/Tag.php';
 
-use App\Src\Category;
+use App\Src\Tag;
 
 $pdo = require '../config/connection.php';
 
-$categoryModel = new Category($pdo);
+$tagModel = new Tag($pdo);
 
-$categories = $categoryModel->getAllCategory();
+$tags = $tagModel->getAllTag();
 ?>
 
 <!DOCTYPE html>
@@ -17,7 +17,7 @@ $categories = $categoryModel->getAllCategory();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Add New Category</title>
+    <title>Add New tag</title>
 </head>
 <body>
 
@@ -28,8 +28,8 @@ $categories = $categoryModel->getAllCategory();
             <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                 <div class="flex-1 flex items-center space-x-2">
                     <h5>
-                        <span class="text-gray-500">All Category:</span>
-                        <span class="dark:text-white"><?= count($categories) ?></span>
+                        <span class="text-gray-500">All Tags:</span>
+                        <span class="dark:text-white"><?= count($tags) ?></span>
                     </h5>
                 </div>
                 <div class="flex-shrink-0 flex flex-col items-start md:flex-row md:items-center lg:justify-end space-y-3 md:space-y-0 md:space-x-3">
@@ -52,8 +52,8 @@ $categories = $categoryModel->getAllCategory();
                         </tr>
                     </thead>
                     <tbody>
-                    <?php if (!empty($categories)) : ?>
-                        <?php foreach ($categories as $category) : ?>
+                    <?php if (!empty($tags)) : ?>
+                        <?php foreach ($tags as $category) : ?>
                             <tr class="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
                                 <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"><?= htmlspecialchars($category['id']) ?></td>
                                 <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"><?= htmlspecialchars($category['name']) ?></td>
@@ -81,7 +81,7 @@ $categories = $categoryModel->getAllCategory();
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="3" class="text-center py-4">No categories found.</td>
+                            <td colspan="3" class="text-center py-4">No tags found.</td>
                         </tr>
                     <?php endif; ?>
                     </tbody>
@@ -90,7 +90,6 @@ $categories = $categoryModel->getAllCategory();
         </div>
     </div>
 </section>
-
 
 </body>
 </html>
