@@ -1,8 +1,10 @@
-<?php
+<?php 
 
-namespace App;
+namespace App\Src;
 
 class User
 {
-    // Contenu de la classe
+    // Contenu
+
+    
 }

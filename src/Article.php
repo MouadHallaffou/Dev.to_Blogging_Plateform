@@ -1,9 +1,17 @@
 <?php
 
-namespace Mouadhallaffou\DevtoCms;
+namespace App\Src;
 
-class Article {
-    public function getTitle() {
-        return "Titre d'exemple";
+use PDO;
+use App\Config\Database;
+
+class Article
+{
+    private PDO $pdo;
+
+    public function __construct(Database $db)
+    {
+        $this->pdo = $db->connect();
     }
+    
 }

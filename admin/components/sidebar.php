@@ -14,7 +14,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item <?= basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : '' ?>">
-                <a class="nav-link" href="index.php">
+                <a class="nav-link" href="/Dev.to_Blogging_Plateform/admin/dashboard.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
@@ -40,7 +40,6 @@
                         <h6 class="collapse-header">Article Management:</h6>
                         <a class="collapse-item" href="articles.php">View All Articles</a>
                         <a class="collapse-item" href="add-article.php">Add New Article</a>
-                        <a class="collapse-item" href="article-drafts.php">Drafts</a>
                     </div>
                 </div>
             </li>

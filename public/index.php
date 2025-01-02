@@ -1,21 +1,22 @@
 <?php
 
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once 'config/Database.php'; 
+require_once 'src/BaseModel.php';
+require_once 'src/Category.php';
+require_once 'src/User.php';
 
-use App\Database\Database;
-
-$db = new Database();
+use App\Config\Database;
+use App\Src\Category;
+use App\Src\User;
 
 try {
-    $connection = $db->connect();
-    echo "Connexion réussie !";
+    $db = new Database();
+    $pdo = $db->connect();
+    echo "Connecté à la base de données!<br>";
 
-    $query = $connection->query("SELECT * FROM users");
-    $users = $query->fetchAll();
 
-    foreach ($users as $user) {
-        echo $user['username'] . "<br>";
-    }
 } catch (PDOException $e) {
-    echo $e->getMessage();
+    echo "Erreur de connexion : " . $e->getMessage();
 }
+?>
