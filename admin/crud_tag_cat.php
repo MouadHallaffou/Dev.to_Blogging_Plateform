@@ -26,3 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action'])
     exit;
 }
 
+//////////////////////////////////////////////////
+//////////////////////////////////////////////////
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Tag_name'])) {
+    $tagName = $_POST['Tag_name'];
+    $tagManager = new Tag($pdo);
+    $tagManager->createTag($tagName);
+    header("Location: tags.php");
+    exit;
+}
