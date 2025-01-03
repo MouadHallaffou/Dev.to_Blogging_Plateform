@@ -1,20 +1,3 @@
-<?php
-require_once __DIR__ . '/../vendor/autoload.php'; 
-
-use App\Config\Database;
-use App\Src\Tag;
-
-$db = new Database();
-$pdo = $db->connect(); 
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Tag_name'])) {
-    $TagName = $_POST['Tag_name']; 
-    $TagManager = new Tag($pdo);
-    $TagManager->createTag($TagName); 
-    header("Location: categories.php");
-    exit;
-}
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -26,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Tag_name'])) {
 </head>
 <body>
 
-<form action="add-Tag.php" method="POST">
+<form action="crud_tag_cat.php" method="POST">
 <div class="bg-blue-200 min-h-screen flex items-center">
 
     <div class="w-full">

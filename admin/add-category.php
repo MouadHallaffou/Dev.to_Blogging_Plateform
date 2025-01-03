@@ -1,22 +1,3 @@
-<?php
-require_once '../config/Connection.php';
-require_once '../src/Category.php';
-
-use App\Config\Database;
-use App\Src\Category;
-
-$db = new Database();
-$pdo = $db->connect();
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_name'])) {
-    $categoryName = $_POST['category_name'];
-    $categoryManager = new Category($pdo);
-    $categoryManager->createCategory($categoryName);
-    header("Location: categories.php"); 
-    exit;
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_name'])) {
 </head>
 <body>
 
-<form action="add-category.php" method="POST">
+<form action="crud_tag_cat.php" method="POST">
 <div class="bg-blue-200 min-h-screen flex items-center">
 
     <div class="w-full">
