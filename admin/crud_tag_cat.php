@@ -36,3 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Tag_name'])) {
     header("Location: tags.php");
     exit;
 }
+
+
+
