@@ -1,14 +1,16 @@
 <?php 
 namespace App\Src;
+require_once __DIR__ . '/BaseModel.php';
+
 
 class Tag extends BaseModel {
-    protected $table = 'categories';
+    protected $table = 'tags';
 
     public function createTag($name) {
         return $this->insertEntry($this->table, ['name' => $name]);
     }
 
-    public function getAllTag() {
+    public function getAllTags() {
         return $this->selectEntries($this->table);
     }
 

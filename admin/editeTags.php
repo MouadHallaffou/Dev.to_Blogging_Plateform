@@ -1,24 +1,41 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once '../src/tag.php';
+require_once '../src/Tag.php';
 require_once '../config/Database.php';
 use App\Config\Database;
 use App\Src\tag;
+
+$tag = null;
+
 try {
     $pdo = Database::connect();
-    $tagModel = new tag($pdo);
-    $tags = $tagModel->getAllTags();
+    $tagModel = new Tag($pdo);
+    $tags = $tagModel->getAlltags();
 
     if (!$tags) {
         $tags = [];
     }
-} catch (Exception $e) {
-    $tags = [];
-    echo "Erreur : " . $e->getMessage();
-}
-$tagLabels = array_column($tags, 'name');
-$tagCounts = array_column($tags, 'count'); 
 
+    if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id']) && is_numeric($_GET['id'])) {
+        $tagId = $_GET['id'];
+
+        $tagData = $tagModel->selectEntries('tags', '*', 'id = ?', [$tagId]);
+
+        if ($tagData) {
+            $tag = $tagData[0]; 
+        } else {
+            echo "tags non trouve.";
+            exit; 
+        }
+    }
+
+} catch (Exception $e) {
+    echo "Erreur : " . $e->getMessage();
+    exit;
+}
+
+$tagLabels = array_column($tags, 'name');
+$tagCounts = array_column($tags, 'count');
 ?>
 
 <!DOCTYPE html>
@@ -60,7 +77,7 @@ $tagCounts = array_column($tags, 'count');
                                                 tags
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <?= count($tags)?>
+                                                <?= count($tags) ?>
                                             </div>
                                         </div>
                                         <div class="col-auto">
@@ -71,13 +88,38 @@ $tagCounts = array_column($tags, 'count');
                             </div>
                         </div>
                     </div>
+
+                    <!-- Modale de mise à jour -->
+                    <?php if ($tag): ?>
+                    <div class="modal show" id="updatetagModal" tabindex="-1" aria-labelledby="updatetagModalLabel" aria-hidden="true" style="display: block;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="updatetagModalLabel">Modifier Tags</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="crud_tags.php" method="POST">
+                                        <input type="hidden" name="tag_id" value="<?= htmlspecialchars($tag['id']) ?>">
+                                        <div class="mb-3">
+                                            <label for="tag_name" class="form-label">Nom de tag</label>
+                                            <input type="text" class="form-control" id="tag_name" name="tagEdit_name" value="<?= htmlspecialchars($tag['name']) ?>" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Modifier</button>
+                                        <a href="tags.php" class="btn btn-secondary">Annuler</a>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
                     <!-- Table -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary">tags</h6>
                         </div>
                         <div class="card-body">
-                             <div class="overflow-auto" style="max-height: 260px;">
+                            <div class="overflow-auto" style="max-height: 260px;">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
@@ -92,10 +134,10 @@ $tagCounts = array_column($tags, 'count');
                                             <td><?= htmlspecialchars($tag['id']) ?></td>
                                             <td><?= htmlspecialchars($tag['name']) ?></td>
                                             <td>
-                                                <a href="editeTags.php?action=edit&id=<?= $tag['id'] ?>" class="btn btn-primary btn-sm">
+                                                <a href="edittags.php?action=edit&id=<?= $tag['id'] ?>" class="btn btn-primary btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a href="crud_tags.php?action=delete&id=<?= $tag['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de supprimer cette tags ?');">
+                                                <a href="crud_tag_cat.php?action=delete&id=<?= $tag['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de supprimer cette catégorie ?');">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </td>

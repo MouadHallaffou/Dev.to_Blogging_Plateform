@@ -1,21 +1,21 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once '../src/Category.php';
+require_once '../src/Tag.php';
 require_once '../config/Database.php';
 use App\Config\Database;
-use App\Src\Category;
+use App\Src\Tag;
 
 try {
     $pdo = Database::connect();
-    $categoryModel = new Category($pdo);
-    $categories = $categoryModel->getAllCategory() ?: [];
+    $tagModel = new Tag($pdo);
+    $tags = $tagModel->getAllTags() ?: [];
 } catch (Exception $e) {
-    $categories = [];
+    $tags = [];
     echo "<div class='alert alert-danger'>Erreur : " . htmlspecialchars($e->getMessage()) . "</div>";
 }
 
-$categoryLabels = array_column($categories, 'name');
-$categoryCounts = array_column($categories, 'count'); 
+$tagLabels = array_column($tags, 'name');
+$tagCounts = array_column($tags, 'count'); 
 ?>
 
 <!DOCTYPE html>
@@ -46,20 +46,20 @@ $categoryCounts = array_column($categories, 'count');
                         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
                     </div>
 
-                    <div class="modal show" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true" style="display: block;">
+                    <div class="modal show" id="addtagModal" tabindex="-1" aria-labelledby="addtagModalLabel" aria-hidden="true" style="display: block;">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="addCategoryModalLabel">Ajouter une Catégorie</h5>
-                                    <button type="button" class="btn-close border-0" id="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fas fa-times text-danger" style="font-size: 1.5rem;"></i></button>
+                                    <h5 class="modal-title" id="addtagModalLabel">Ajouter une Tags</h5>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="crud_tag_cat.php" method="POST">
+                                    <form action="crud_tags.php" method="POST">
                                         <div class="mb-3">
-                                            <label for="category_name" class="form-label">Nom de la Catégorie</label>
-                                            <input type="text" class="form-control" id="category_name" name="category_name" required>
+                                            <label for="tag_name" class="form-label">Nom de tags</label>
+                                            <input type="text" class="form-control" id="tag_name" name="tag_name" required>
                                         </div>
                                         <button type="submit" class="btn btn-primary">Ajouter</button>
+                                        <a href="tags.php" class="btn btn-secondary">Annuler</a>
                                     </form>
                                 </div>
                             </div>
@@ -74,14 +74,14 @@ $categoryCounts = array_column($categories, 'count');
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Categories
+                                                Tags
                                             </div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <?= count($categories) ?>
+                                                <?= count($tags) ?>
                                             </div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-folder fa-2x text-gray-300"></i>
+                                           <i class="fas fa-tags fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -89,10 +89,10 @@ $categoryCounts = array_column($categories, 'count');
                         </div>
                     </div>
 
-                    <!-- Categories Table -->
+                    <!-- tags Table -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Categories</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Tags</h6>
                         </div>
                         <div class="card-body">
                              <div class="overflow-auto" style="max-height: 260px;">
@@ -105,15 +105,15 @@ $categoryCounts = array_column($categories, 'count');
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach ($categories as $category): ?>
+                                        <?php foreach ($tags as $tag): ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($category['id']) ?></td>
-                                            <td><?= htmlspecialchars($category['name']) ?></td>
+                                            <td><?= htmlspecialchars($tag['id']) ?></td>
+                                            <td><?= htmlspecialchars($tag['name']) ?></td>
                                             <td>
-                                                <a href="crud_tag_cat.php?action=edit&id=<?= $category['id'] ?>" class="btn btn-primary btn-sm">
+                                                <a href="crud_tag_cat.php?action=edit&id=<?= $tag['id'] ?>" class="btn btn-primary btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a href="crud_tag_cat.php?action=delete&id=<?= $category['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de supprimer cette catégorie ?');">
+                                                <a href="crud_tag_cat.php?action=delete&id=<?= $tag['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de supprimer cette catégorie ?');">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </td>
@@ -136,13 +136,6 @@ $categoryCounts = array_column($categories, 'count');
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/chart.js/Chart.min.js"></script>
-    <script>
-        const addCategoryModal = document.getElementById('addCategoryModal');
-        const btnClose = document.getElementById('btn-close');
-        btnClose.addEventListener("click", () => {
-            addCategoryModal.style.display = "none";
-        });
-    </script>
 </body>
 
 </html>

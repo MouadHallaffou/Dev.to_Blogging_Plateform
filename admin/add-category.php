@@ -53,7 +53,7 @@ $categoryCounts = array_column($categories, 'count');
                                     <h5 class="modal-title" id="addCategoryModalLabel">Ajouter une Catégorie</h5>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="crud_tag_cat.php" method="POST">
+                                    <form action="crud_categories.php" method="POST">
                                         <div class="mb-3">
                                             <label for="category_name" class="form-label">Nom de la Catégorie</label>
                                             <input type="text" class="form-control" id="category_name" name="category_name" required>
@@ -136,13 +136,6 @@ $categoryCounts = array_column($categories, 'count');
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/chart.js/Chart.min.js"></script>
-    <script>
-        const addCategoryModal = document.getElementById('addCategoryModal');
-        const btnClose = document.getElementById('btn-close');
-        btnClose.addEventListener("click", () => {
-            addCategoryModal.style.display = "none";
-        });
-    </script>
 </body>
 
 </html>

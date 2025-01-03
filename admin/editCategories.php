@@ -24,7 +24,7 @@ try {
         if ($categoryData) {
             $category = $categoryData[0]; 
         } else {
-            echo "Catégorie non trouvée.";
+            echo "Categorie non trouvee.";
             exit; 
         }
     }
@@ -99,11 +99,11 @@ $categoryCounts = array_column($categories, 'count');
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="crud_tag_cat.php" method="POST">
+                                    <form action="crud_categories.php" method="POST">
                                         <input type="hidden" name="category_id" value="<?= htmlspecialchars($category['id']) ?>">
                                         <div class="mb-3">
                                             <label for="category_name" class="form-label">Nom de la Catégorie</label>
-                                            <input type="text" class="form-control" id="category_name" name="category_name" value="<?= htmlspecialchars($category['name']) ?>" required>
+                                            <input type="text" class="form-control" id="category_name" name="categoryEdit_name" value="<?= htmlspecialchars($category['name']) ?>" required>
                                         </div>
                                         <button type="submit" class="btn btn-primary">Modifier</button>
                                         <a href="categories.php" class="btn btn-secondary">Annuler</a>
