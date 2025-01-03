@@ -5,17 +5,37 @@ require_once '../config/Database.php';
 use App\Config\Database;
 use App\Src\Category;
 
+$category = null;
+
 try {
     $pdo = Database::connect();
     $categoryModel = new Category($pdo);
-    $categories = $categoryModel->getAllCategory() ?: [];
+    $categories = $categoryModel->getAllCategory();
+
+    if (!$categories) {
+        $categories = [];
+    }
+
+    if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id']) && is_numeric($_GET['id'])) {
+        $categoryId = $_GET['id'];
+
+        $categoryData = $categoryModel->selectEntries('categories', '*', 'id = ?', [$categoryId]);
+
+        if ($categoryData) {
+            $category = $categoryData[0]; 
+        } else {
+            echo "Catégorie non trouvée.";
+            exit; 
+        }
+    }
+
 } catch (Exception $e) {
-    $categories = [];
-    echo "<div class='alert alert-danger'>Erreur : " . htmlspecialchars($e->getMessage()) . "</div>";
+    echo "Erreur : " . $e->getMessage();
+    exit;
 }
 
 $categoryLabels = array_column($categories, 'name');
-$categoryCounts = array_column($categories, 'count'); 
+$categoryCounts = array_column($categories, 'count');
 ?>
 
 <!DOCTYPE html>
@@ -46,26 +66,6 @@ $categoryCounts = array_column($categories, 'count');
                         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
                     </div>
 
-                    <div class="modal show" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true" style="display: block;">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="addCategoryModalLabel">Ajouter une Catégorie</h5>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="crud_tag_cat.php" method="POST">
-                                        <div class="mb-3">
-                                            <label for="category_name" class="form-label">Nom de la Catégorie</label>
-                                            <input type="text" class="form-control" id="category_name" name="category_name" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Ajouter</button>
-                                        <a href="categories.php" class="btn btn-secondary">Annuler</a>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Cards -->
                     <div class="row">
                         <div class="col-xl-3 col-md-6 mb-4">
@@ -89,13 +89,38 @@ $categoryCounts = array_column($categories, 'count');
                         </div>
                     </div>
 
-                    <!-- Categories Table -->
+                    <!-- Modale de mise à jour -->
+                    <?php if ($category): ?>
+                    <div class="modal show" id="updateCategoryModal" tabindex="-1" aria-labelledby="updateCategoryModalLabel" aria-hidden="true" style="display: block;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="updateCategoryModalLabel">Modifier la Catégorie</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="crud_tag_cat.php" method="POST">
+                                        <input type="hidden" name="category_id" value="<?= htmlspecialchars($category['id']) ?>">
+                                        <div class="mb-3">
+                                            <label for="category_name" class="form-label">Nom de la Catégorie</label>
+                                            <input type="text" class="form-control" id="category_name" name="category_name" value="<?= htmlspecialchars($category['name']) ?>" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Modifier</button>
+                                        <a href="categories.php" class="btn btn-secondary">Annuler</a>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Table -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary">Categories</h6>
                         </div>
                         <div class="card-body">
-                             <div class="overflow-auto" style="max-height: 260px;">
+                            <div class="overflow-auto" style="max-height: 260px;">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
@@ -110,7 +135,7 @@ $categoryCounts = array_column($categories, 'count');
                                             <td><?= htmlspecialchars($category['id']) ?></td>
                                             <td><?= htmlspecialchars($category['name']) ?></td>
                                             <td>
-                                                <a href="crud_tag_cat.php?action=edit&id=<?= $category['id'] ?>" class="btn btn-primary btn-sm">
+                                                <a href="editCategories.php?action=edit&id=<?= $category['id'] ?>" class="btn btn-primary btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <a href="crud_tag_cat.php?action=delete&id=<?= $category['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de supprimer cette catégorie ?');">
@@ -136,13 +161,6 @@ $categoryCounts = array_column($categories, 'count');
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/chart.js/Chart.min.js"></script>
-    <script>
-        const addCategoryModal = document.getElementById('addCategoryModal');
-        const btnClose = document.getElementById('btn-close');
-        btnClose.addEventListener("click", () => {
-            addCategoryModal.style.display = "none";
-        });
-    </script>
 </body>
 
 </html>

@@ -92,7 +92,7 @@ $categoryCounts = array_column($categories, 'count');
                                             <td><?= htmlspecialchars($category['id']) ?></td>
                                             <td><?= htmlspecialchars($category['name']) ?></td>
                                             <td>
-                                                <a href="crud_tag_cat.php?action=edit&id=<?= $category['id'] ?>" class="btn btn-primary btn-sm">
+                                                <a href="editCategories.php?action=edit&id=<?= $category['id'] ?>" class="btn btn-primary btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <a href="crud_tag_cat.php?action=delete&id=<?= $category['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de supprimer cette catégorie ?');">
