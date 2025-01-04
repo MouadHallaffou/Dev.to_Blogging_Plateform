@@ -1,17 +1,26 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../config/connection.php';
-$sql = "
-    SELECT a.id, a.title, a.slug, a.content, a.excerpt, a.meta_description, a.created_at, a.views, 
-           c.name AS category_name
-    FROM articles a
-    JOIN categories c ON a.category_id = c.id
-    LEFT JOIN users u ON au.user_id = u.id_user
-";
+require_once __DIR__ . '/../config/Database.php';
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-$articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+use App\Config\Database;
+
+try {
+    $pdo = Database::connect();
+
+    $sql = "SELECT a.id AS article_id, a.title, a.slug, a.content, a.excerpt, a.meta_description, a.created_at, a.views, 
+            c.name AS category_name, 
+            COALESCE(GROUP_CONCAT(t.name), '') AS tags
+            FROM articles a
+            JOIN categories c ON a.category_id = c.id
+            LEFT JOIN article_tags at ON a.id = at.article_id
+            LEFT JOIN tags t ON at.tag_id = t.id
+            GROUP BY a.id ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Erreur lors de la récupération des articles : " . $e->getMessage());
+}
 
 // Define colors for the chart
 $colors = [
@@ -85,7 +94,7 @@ $colors = [
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                 Articles</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= count($articles) ?></div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-newspaper fa-2x text-gray-300"></i>
@@ -96,18 +105,19 @@ $colors = [
                         </div>
 
                     </div>
-                <!-- Content Row -->
+                    <!-- Content Row -->
 
-                <!-- DataTales Example -->
+                    <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary">Recent Articles</h6>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
+                            <div class="table-responsive overflow-auto" style="max-height: 260px;">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
+                                            <th>ID</th>
                                             <th>Title</th>
                                             <th>Category</th>
                                             <th>Tags</th>
@@ -117,40 +127,46 @@ $colors = [
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    <?php foreach ($articles as $article): ?>
-                                        <tr>
-                                            <td><?= htmlspecialchars($article['title']) ?></td>
-                                            <td><?= htmlspecialchars($article['category_name']) ?></td>
-                                            <td>
-                                                <?php
-                                                // Supposons que vous avez un champ 'tags' dans votre base de données
-                                                if (!empty($article['tags'])) {
-                                                    $tags = explode(',', $article['tags']);
-                                                    foreach ($tags as $tag) {
-                                                        echo '<span class="badge badge-primary mr-1">' . htmlspecialchars($tag) . '</span>';
+                                        <?php foreach ($articles as $article): ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($article['article_id']) ?></td>
+                                                <td><?= htmlspecialchars($article['title']) ?></td>
+                                                <td><?= htmlspecialchars($article['category_name']) ?></td>
+                                                <td>
+                                                    <?php
+                                                    if (!empty($article['tags'])) {
+                                                        $tags = explode(',', $article['tags']);
+                                                        foreach ($tags as $tag) {
+                                                            echo '<span class="badge badge-primary mr-1">' . htmlspecialchars($tag) . '</span>';
+                                                        }
+                                                    } else {
+                                                        echo '<span class="badge badge-secondary">Aucun tag</span>';
                                                     }
-                                                }
-                                                ?>
-                                            </td>
-                                            <td data-order="<?= $article['views'] ?>">
-                                                <?= number_format($article['views']) ?>
-                                            </td>
-                                            <td data-order="<?= strtotime($article['created_at']) ?>">
-                                                <?= date('M d, Y H:i', strtotime($article['created_at'])) ?>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group">
-                                                    <a href="edit-article.php?id=<?= $article['id'] ?>" class="btn btn-primary btn-sm">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <button type="button" class="btn btn-danger btn-sm delete-article" data-id="<?= $article['id'] ?>">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
+                                                    ?>
+                                                </td>
+                                                <td data-order="<?= $article['views'] ?>">
+                                                    <?= number_format($article['views']) ?>
+                                                </td>
+                                                <td data-order="<?= strtotime($article['created_at']) ?>">
+                                                    <?= date('M d, Y H:i', strtotime($article['created_at'])) ?>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex justify-content-around">
+                                                        <a href="editArticles.php?id=<?= $article['article_id'] ?>" class="btn btn-primary btn-sm">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="crud_articles.php?id=<?= $article['article_id'] ?>"
+                                                            class="btn btn-danger btn-sm delete-article"
+                                                            data-id="<?= $article['article_id'] ?>"
+                                                            onclick="return confirm('vous etes rûr de supprimer cet article ?');">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
                                     </tbody>
+
                                 </table>
                             </div>
                         </div>
@@ -211,54 +227,54 @@ $colors = [
     <!-- Page level custom scripts -->
     <script src="js/demo/chart-area-demo.js"></script>
     <script src="js/demo/chart-pie-demo.js"></script>
-        <!-- Initialize the pie chart -->
-        <script>
-    // Set new default font family and font color to mimic Bootstrap's default styling
-    Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-    Chart.defaults.global.defaultFontColor = '#858796';
+    <!-- Initialize the pie chart -->
+    <script>
+        // Set new default font family and font color to mimic Bootstrap's default styling
+        Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = '#858796';
 
-    // Pie Chart
-    var ctx = document.getElementById("categoryPieChart");
-    var categoryPieChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: <?= json_encode($categories) ?>,
-            datasets: [{
-                data: <?= json_encode($counts) ?>,
-                backgroundColor: <?= json_encode(array_slice($colors, 0, count($categories))) ?>,
-                hoverBackgroundColor: <?= json_encode(array_slice($colors, 0, count($categories))) ?>,
-                hoverBorderColor: "rgba(234, 236, 244, 1)",
-            }],
-        },
-        options: {
-            maintainAspectRatio: false,
-            tooltips: {
-                backgroundColor: "rgb(255,255,255)",
-                bodyFontColor: "#858796",
-                borderColor: '#dddfeb',
-                borderWidth: 1,
-                xPadding: 15,
-                yPadding: 15,
-                displayColors: false,
-                caretPadding: 10,
-                callbacks: {
-                    label: function(tooltipItem, data) {
-                        var dataset = data.datasets[tooltipItem.datasetIndex];
-                        var total = dataset.data.reduce(function(previousValue, currentValue) {
-                            return previousValue + currentValue;
-                        });
-                        var currentValue = dataset.data[tooltipItem.index];
-                        var percentage = Math.floor(((currentValue/total) * 100)+0.5);
-                        return data.labels[tooltipItem.index] + ': ' + currentValue + ' (' + percentage + '%)';
+        // Pie Chart
+        var ctx = document.getElementById("categoryPieChart");
+        var categoryPieChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: <?= json_encode($categories) ?>,
+                datasets: [{
+                    data: <?= json_encode($counts) ?>,
+                    backgroundColor: <?= json_encode(array_slice($colors, 0, count($categories))) ?>,
+                    hoverBackgroundColor: <?= json_encode(array_slice($colors, 0, count($categories))) ?>,
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    caretPadding: 10,
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            var dataset = data.datasets[tooltipItem.datasetIndex];
+                            var total = dataset.data.reduce(function(previousValue, currentValue) {
+                                return previousValue + currentValue;
+                            });
+                            var currentValue = dataset.data[tooltipItem.index];
+                            var percentage = Math.floor(((currentValue / total) * 100) + 0.5);
+                            return data.labels[tooltipItem.index] + ': ' + currentValue + ' (' + percentage + '%)';
+                        }
                     }
-                }
+                },
+                legend: {
+                    display: false
+                },
+                cutoutPercentage: 80,
             },
-            legend: {
-                display: false
-            },
-            cutoutPercentage: 80,
-        },
-    });
+        });
     </script>
 
     <!-- Page level plugins -->

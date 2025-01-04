@@ -1,11 +1,32 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/Database.php';
 require_once '../src/Article.php';
 
-$article = new Src\Article();
+use App\Config\Database;
 
+$article = new Src\Article();
 $categories = $article->getCategories();
 $tags = $article->getTags();
+
+try {
+    $pdo = Database::connect();
+
+    $sql = "SELECT a.id AS article_id, a.title, a.slug, a.content, a.excerpt, a.meta_description, a.created_at, a.views, 
+            c.name AS category_name, 
+            COALESCE(GROUP_CONCAT(t.name), '') AS tags
+            FROM articles a
+            JOIN categories c ON a.category_id = c.id
+            LEFT JOIN article_tags at ON a.id = at.article_id
+            LEFT JOIN tags t ON at.tag_id = t.id
+            GROUP BY a.id ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Erreur lors de la récupération des articles : " . $e->getMessage());
+}
 
 // Prepare data for the chart
 // $categories = [];
@@ -85,22 +106,10 @@ $colors = [
                                             <label for="article_title" class="form-label">Titre de l'article</label>
                                             <input 
                                                 type="text" 
-                                                class="form-control form-control-lg rounded shadow-sm" 
+                                                class="form-control rounded shadow-sm" 
                                                 id="article_title" 
                                                 name="title" 
                                                 placeholder="Saisissez le titre de l'article" 
-                                                required>
-                                        </div>
-
-                                        <!-- Slug -->
-                                        <div class="mb-3">
-                                            <label for="article_slug" class="form-label">Slug</label>
-                                            <input 
-                                                type="text" 
-                                                class="form-control form-control-lg rounded shadow-sm" 
-                                                id="article_slug" 
-                                                name="slug" 
-                                                placeholder="Saisissez le slug" 
                                                 required>
                                         </div>
 
@@ -158,39 +167,13 @@ $colors = [
                                         <div class="mb-3">
                                             <label for="article_tags" class="form-label">Tags</label>
                                         <div class="d-flex flex-wrap gap-3">
-                                            <?php foreach ($tags as $tag): ?>
-                                                <div class="form-check">
-                                                    <input type="checkbox" class="form-check-input" id="tag<?= $tag['id']; ?>" name="tags[]" value="<?= $tag['id']; ?>">
-                                                    <label class="form-check-label" for="tag<?= $tag['id']; ?>"><?= $tag['name']; ?></label>
-                                                </div>
-                                            <?php endforeach; ?>
+                                          <?php foreach ($tags as $tag): ?>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="tag<?= $tag['id']; ?>" name="tags[]" value="<?= $tag['id']; ?>">
+                                                <label class="form-check-label" for="tag<?= $tag['id']; ?>"><?= $tag['name'] ;?>   <label> 
+                                            </div>
+                                          <?php endforeach; ?>
                                         </div>
-                                        </div>
-                                            
-                                        <!-- Auteur -->
-                                        <!-- <div class="mb-3">
-                                            <label for="article_author" class="form-label">Auteur</label>
-                                            <select 
-                                                class="form-control form-select-lg rounded shadow-sm" 
-                                                id="article_author" 
-                                                name="author_id" 
-                                                required>
-                                                <option value="1">Auteur 1</option>
-                                                <option value="2">Auteur 2</option>
-                                            </select>
-                                        </div> -->
-
-                                        <!-- Statut -->
-                                        <div class="mb-3">
-                                            <label for="article_status" class="form-label">Statut</label>
-                                            <select 
-                                                class="form-control form-select-lg rounded shadow-sm" 
-                                                id="article_status" 
-                                                name="status">
-                                                <option value="soumis">Soumis</option>
-                                                <option value="accepté">Accepté</option>
-                                                <option value="refusé">Refusé</option>
-                                            </select>
                                         </div>
 
                                         <!-- Date de publication -->
@@ -225,7 +208,7 @@ $colors = [
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                 Articles</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?=count($articles)?></div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-newspaper fa-2x text-gray-300"></i>
@@ -244,12 +227,12 @@ $colors = [
                             <h6 class="m-0 font-weight-bold text-primary">Recent Articles</h6>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
+                        <div class="table-responsive overflow-auto" style="max-height: 260px;">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
+                                            <th>ID</th>
                                             <th>Title</th>
-                                            <th>Author</th>
                                             <th>Category</th>
                                             <th>Tags</th>
                                             <th>Views</th>
@@ -257,51 +240,47 @@ $colors = [
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <!-- <tbody>
-                                    <?php foreach($articles as $article): ?>
-                                        <tr>
-                                            <td>
-                                               
-                                                <?= htmlspecialchars($article['title']) ?>
-                                            </td>
-                                            <td><?= htmlspecialchars($article['author_name']) ?></td>
-                                            <td><?= htmlspecialchars($article['category_name']) ?></td>
-                                            <td>
-                                                <?php
-                                                if ($article['tags']) {
-                                                    $tags = explode(',', $article['tags']);
-                                                    foreach($tags as $tag) {
-                                                        echo '<span class="badge badge-primary mr-1">' . htmlspecialchars($tag) . '</span>';
+                                    <tbody>
+                                        <?php foreach ($articles as $article): ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($article['article_id']) ?></td>
+                                                <td><?= htmlspecialchars($article['title']) ?></td>
+                                                <td><?= htmlspecialchars($article['category_name']) ?></td>
+                                                <td>
+                                                    <?php
+                                                    if (!empty($article['tags'])) {
+                                                        $tags = explode(',', $article['tags']);
+                                                        foreach ($tags as $tag) {
+                                                            echo '<span class="badge badge-primary mr-1">' . htmlspecialchars($tag) . '</span>';
+                                                        }
+                                                    } else {
+                                                        echo '<span class="badge badge-secondary">Aucun tag</span>';
                                                     }
-                                                }
-                                                ?>
-                                            </td>
-                                            <td data-order="<?= $article['views'] ?>">
-                                                <?= number_format($article['views']) ?>
-                                            </td>
-                                            <td data-order="<?= strtotime($article['created_at']) ?>">
-                                                <?= date('M d, Y H:i', strtotime($article['created_at'])) ?>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group">
-                                                    <a href="view-article.php?id=<?= $article['id'] ?>" 
-                                                    class="btn btn-info btn-sm">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    <a href="edit-article.php?id=<?= $article['id'] ?>" 
-                                                    class="btn btn-primary btn-sm">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <button type="button" 
-                                                            class="btn btn-danger btn-sm delete-article" 
-                                                            data-id="<?= $article['id'] ?>">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    </tbody> -->
+                                                    ?>
+                                                </td>
+                                                <td data-order="<?= $article['views'] ?>">
+                                                    <?= number_format($article['views']) ?>
+                                                </td>
+                                                <td data-order="<?= strtotime($article['created_at']) ?>">
+                                                    <?= date('M d, Y H:i', strtotime($article['created_at'])) ?>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex justify-content-around">
+                                                        <a href="edit-article.php?id=<?= $article['article_id'] ?>" class="btn btn-primary btn-sm">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="crud_articles.php?id=<?= $article['article_id'] ?>"
+                                                            class="btn btn-danger btn-sm delete-article"
+                                                            data-id="<?= $article['article_id'] ?>"
+                                                            onclick="return confirm('vous etes rûr de supprimer cet article ?');">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+
                                 </table>
                             </div>
                         </div>

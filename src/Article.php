@@ -25,6 +25,7 @@ class Article
     public function __construct(){
         self::$db = Database::connect();
     }
+
     // Getter et Setter methods
     public function getId(){
         return $this->id;
@@ -89,13 +90,6 @@ class Article
         $this->featuredImage = $featuredImage;
     }
 
-    public function getStatus(){
-        return $this->status;
-    }
-    public function setStatus($status){
-        $this->status = $status;
-    }
-
     public function getScheduledDate(){
         return $this->scheduledDate;
     }
@@ -124,58 +118,113 @@ class Article
         $this->views = $views;
     }
 
-    //methode inserte articles:
-    public function create(){
+    public function create($tagIds = []) {
+        // Générer le slug  a partir du titre
+        $slug = $this->generateSlug($this->title);
+ 
+        $slugQuery = self::$db->prepare("SELECT COUNT(*) FROM articles WHERE slug = :slug");
+        $slugQuery->bindParam(':slug', $slug);
+        $slugQuery->execute();
+        $slugExists = $slugQuery->fetchColumn();
+    
+        if ($slugExists > 0) {
+            $slug = $this->generateUniqueSlug($slug);
+        }
+
         $categoryQuery = self::$db->prepare("SELECT COUNT(*) FROM categories WHERE id = :category_id");
         $categoryQuery->bindParam(':category_id', $this->categoryId);
         $categoryQuery->execute();
         $categoryExists = $categoryQuery->fetchColumn();
-
+    
         if ($categoryExists == 0) {
-            die('La categorie existe pas');
+            die('La catégorie spécifiée n\'existe pas.');
         }
-
+ 
         if (isset($_FILES['featured_image']) && $_FILES['featured_image']['error'] == 0) {
             $imageName = $_FILES['featured_image']['name'];
             $imageTmp = $_FILES['featured_image']['tmp_name'];
             $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/Dev.to_Blogging_Plateform/public/assets/images/';
             $imagePath = $uploadDir . basename($imageName);
-
+    
             if (!is_dir($uploadDir)) {
-                die('Le dossier ni existe pas');
+                die('Le dossier n\'existe pas');
             }
-
+    
             if (!is_writable($uploadDir)) {
-                die('Le dossier non accessible.');
+                die('Le dossier n\'est pas accessible.');
             }
-
+    
             if (move_uploaded_file($imageTmp, $imagePath)) {
                 $this->featuredImage = $imagePath;
             } else {
-                die('Erreur : Impossible telecharger l image');
+                die('Erreur : Impossible de télécharger l\'image');
             }
         } else {
-            die('Aucune image telecharger');
+            die('Aucune image téléchargée');
         }
-
-        $sql = "INSERT INTO articles (title, slug, content, excerpt, meta_description, category_id, featured_image, status, scheduled_date)
-            VALUES (:title, :slug, :content, :excerpt, :meta_description, :category_id, :featured_image, :status, :scheduled_date)";
+    
+        // Insertion d article
+        $sql = "INSERT INTO articles (title, slug, content, excerpt, meta_description, category_id, featured_image, scheduled_date)
+            VALUES (:title, :slug, :content, :excerpt, :meta_description, :category_id, :featured_image, :scheduled_date)";
         $stmt = self::$db->prepare($sql);
         $stmt->bindParam(':title', $this->title);
-        $stmt->bindParam(':slug', $this->slug);
+        $stmt->bindParam(':slug', $slug);
         $stmt->bindParam(':content', $this->content);
         $stmt->bindParam(':excerpt', $this->excerpt);
         $stmt->bindParam(':meta_description', $this->metaDescription);
         $stmt->bindParam(':category_id', $this->categoryId);
         $stmt->bindParam(':featured_image', $this->featuredImage);
-        $stmt->bindParam(':status', $this->status);
-        $stmt->bindParam(':scheduled_date', $this->scheduledDate);
 
-        return $stmt->execute();
+        $stmt->bindParam(':scheduled_date', $this->scheduledDate);
+        if ($stmt->execute()) {
+            $articleId = self::$db->lastInsertId(); 
+
+            if (!empty($tagIds)) {
+                foreach ($tagIds as $tagId) {
+                    $checkTagQuery = self::$db->prepare("SELECT COUNT(*) FROM tags WHERE id = :tag_id");
+                    $checkTagQuery->bindParam(':tag_id', $tagId);
+                    $checkTagQuery->execute();
+                    $tagExists = $checkTagQuery->fetchColumn();
+    
+                    if ($tagExists > 0) {
+                        $insertTagQuery = self::$db->prepare("INSERT INTO article_tags (article_id, tag_id) VALUES (:article_id, :tag_id)");
+                        $insertTagQuery->bindParam(':article_id', $articleId);
+                        $insertTagQuery->bindParam(':tag_id', $tagId);
+                        $insertTagQuery->execute();
+                    }
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+    private function generateSlug($title) {
+        $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
+        return $slug;
     }
 
-    //methode modifier article
-    public function update(){
+    private function generateUniqueSlug($slug) {
+        $counter = 1;
+        $uniqueSlug = $slug . '-' . $counter;
+
+        while ($this->slugExists($uniqueSlug)) {
+            $counter++;
+            $uniqueSlug = $slug . '-' . $counter;
+        }
+        return $uniqueSlug;
+    }
+
+    private function slugExists($slug) {
+        $query = self::$db->prepare("SELECT COUNT(*) FROM articles WHERE slug = :slug");
+        $query->bindParam(':slug', $slug);
+        $query->execute();
+        return $query->fetchColumn() > 0;
+    }
+     
+    // Méthode pour mettre à jour un article
+    public function update($tagIds = []){
+        // Vérifier si la catégorie existe
         $categoryQuery = self::$db->prepare("SELECT COUNT(*) FROM categories WHERE id = :category_id");
         $categoryQuery->bindParam(':category_id', $this->categoryId);
         $categoryQuery->execute();
@@ -185,49 +234,85 @@ class Article
             die('La catégorie spécifiée n\'existe pas.');
         }
 
-        $sql = "UPDATE articles SET title = :title, slug = :slug, content = :content, excerpt = :excerpt, meta_description = :meta_description,
-                category_id = :category_id, author_id = :author_id, featured_image = :featured_image, status = :status, scheduled_date = :scheduled_date
-                WHERE id = :id";
+        // Générer un slug mis à jour à partir du titre
+        $slug = $this->generateSlug($this->title);
+        if ($this->slugExists($slug)) {
+            $slug = $this->generateUniqueSlug($slug);
+        }
 
+        // Traiter la nouvelle image si elle est téléchargée
+        if (isset($_FILES['featured_image']) && $_FILES['featured_image']['error'] == 0) {
+            $imageName = $_FILES['featured_image']['name'];
+            $imageTmp = $_FILES['featured_image']['tmp_name'];
+            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/Dev.to_Blogging_Plateform/public/assets/images/';
+            $imagePath = $uploadDir . basename($imageName);
+
+            if (!move_uploaded_file($imageTmp, $imagePath)) {
+                die('Erreur : Impossible de télécharger la nouvelle image');
+            }
+
+            $this->featuredImage = $imagePath;
+        }
+
+        // Mise à jour de l'article
+        $sql = "UPDATE articles 
+                SET title = :title, slug = :slug, content = :content, excerpt = :excerpt, meta_description = :meta_description, 
+                    category_id = :category_id, featured_image = :featured_image, scheduled_date = :scheduled_date, updated_at = NOW()
+                WHERE id = :id";
         $stmt = self::$db->prepare($sql);
-        $stmt->bindParam(':id', $this->id);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
         $stmt->bindParam(':title', $this->title);
-        $stmt->bindParam(':slug', $this->slug);
+        $stmt->bindParam(':slug', $slug);
         $stmt->bindParam(':content', $this->content);
         $stmt->bindParam(':excerpt', $this->excerpt);
         $stmt->bindParam(':meta_description', $this->metaDescription);
         $stmt->bindParam(':category_id', $this->categoryId);
         $stmt->bindParam(':featured_image', $this->featuredImage);
-        $stmt->bindParam(':status', $this->status);
         $stmt->bindParam(':scheduled_date', $this->scheduledDate);
 
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            if (!empty($tagIds)) {
+                $deleteTagsQuery = self::$db->prepare("DELETE FROM article_tags WHERE article_id = :article_id");
+                $deleteTagsQuery->bindParam(':article_id', $this->id, PDO::PARAM_INT);
+                $deleteTagsQuery->execute();
+
+                foreach ($tagIds as $tagId) {
+                    $insertTagQuery = self::$db->prepare("INSERT INTO article_tags (article_id, tag_id) VALUES (:article_id, :tag_id)");
+                    $insertTagQuery->bindParam(':article_id', $this->id, PDO::PARAM_INT);
+                    $insertTagQuery->bindParam(':tag_id', $tagId, PDO::PARAM_INT);
+                    $insertTagQuery->execute();
+                }
+            }
+            return true;
+        }
+
+        return false;
     }
 
-    // Method delete 
-    public function delete(){
+    // Méthode pour supprimer un article
+    public function delete($articleId) {
         $sql = "DELETE FROM articles WHERE id = :id";
         $stmt = self::$db->prepare($sql);
-        $stmt->bindParam(':id', $this->id);
+        $stmt->bindParam(':id', $articleId, PDO::PARAM_INT);
 
         return $stmt->execute();
     }
 
-    // Method Select
+    // Méthode pour récupérer tous les articles
     public function fetchAll(){
         $sql = "SELECT * FROM articles";
         $stmt = self::$db->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // recuperer les categories depuis la base de donner
+    // Méthode pour recuperer les catégories depuis la base de données
     public function getCategories(){
         $sql = "SELECT id, name FROM categories";
         $stmt = self::$db->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // recuperer lestags depuis la base de donner
+    // Méthode pour recuperer les tags depuis la base de donner
     public function getTags(){
         $sql = "SELECT id, name FROM tags";
         $stmt = self::$db->query($sql);
