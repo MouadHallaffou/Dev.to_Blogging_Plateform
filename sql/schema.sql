@@ -1,3 +1,4 @@
+-- Active: 1734723274644@@127.0.0.1@3306@devblog_db
 DROP DATABASE IF EXISTS devblog_db;
 CREATE DATABASE devblog_db;
 
@@ -43,15 +44,13 @@ CREATE TABLE articles (
     excerpt TEXT,
     meta_description VARCHAR(160),
     category_id BIGINT NOT NULL,
-    author_id BIGINT NOT NULL,
     featured_image VARCHAR(255),
-    status ENUM('draft', 'published', 'scheduled') NOT NULL DEFAULT 'draft',
-    scheduled_date DATETIME NULL,
+    status ENUM('soumis', 'accepte', 'refuse') NOT NULL DEFAULT 'soumis',
+    scheduled_date DATETIME DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     views INTEGER DEFAULT 0,
-    FOREIGN KEY (category_id) REFERENCES categories (id),
-    FOREIGN KEY (author_id) REFERENCES authors (id_author)
+    FOREIGN KEY (category_id) REFERENCES categories (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- tags table
