@@ -11,8 +11,7 @@ $tags = $article->getTags();
 
 try {
     $pdo = Database::connect();
-
-    $sql = "SELECT a.id AS article_id, a.title, a.slug, a.content, a.excerpt, a.meta_description, a.created_at, a.views, 
+    $sql = "SELECT a.id AS article_id, a.title,a.featured_image, a.slug, a.content, a.excerpt, a.meta_description, a.created_at, a.views, 
             c.name AS category_name, 
             COALESCE(GROUP_CONCAT(t.name), '') AS tags
             FROM articles a
@@ -149,10 +148,14 @@ $colors = [
                                         </div>
                                         <!-- Image mise en avant -->
                                         <div class="mb-3">
-                                            <label for="article_featured_image" class="form-label">Image mise en avant</label>
-                                            <input type="file" class="form-control" id="article_featured_image" name="featured_image">
+                                            <label for="article_featured_image" class="form-label">Image mise en avant (URL)</label>
+                                            <input 
+                                                type="url" 
+                                                class="form-control" 
+                                                id="article_featured_image" 
+                                                name="featured_image" 
+                                                placeholder="Entrez l'URL de l'image">
                                         </div>
-
                                          <!-- Catégorie -->
                                          <div class="mb-3">
                                             <label for="article_category" class="form-label">Catégorie</label>
@@ -188,7 +191,7 @@ $colors = [
 
                                         <!-- Boutons -->
                                         <div class="d-flex justify-content-around gap-4">
-                                            <button type="submit" class="btn btn-primary px-4">Ajouter</button>
+                                            <button type="submit" name="add_article" class="btn btn-primary px-4">Ajouter</button>
                                             <a href="articles.php" class="btn btn-secondary px-4">Annuler</a>
                                         </div>
                                     </form>
@@ -233,6 +236,7 @@ $colors = [
                                         <tr>
                                             <th>ID</th>
                                             <th>Title</th>
+                                            <th>Title</th>
                                             <th>Category</th>
                                             <th>Tags</th>
                                             <th>Views</th>
@@ -245,6 +249,7 @@ $colors = [
                                             <tr>
                                                 <td><?= htmlspecialchars($article['article_id']) ?></td>
                                                 <td><?= htmlspecialchars($article['title']) ?></td>
+                                                <td> <img src="<?= htmlspecialchars($article['featured_image']) ?>" class="article-image" alt="img" style="width: 30px; height: 30px;"></td>
                                                 <td><?= htmlspecialchars($article['category_name']) ?></td>
                                                 <td>
                                                     <?php

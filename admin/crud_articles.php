@@ -3,9 +3,11 @@ require_once '../src/Article.php';
 require_once '../config/Database.php';
 
 use Src\Article;
+
 $article = new Article();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Créer un article
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_article'])) {
     $article->setTitle($_POST['title']);
     $article->setContent($_POST['content']);
     $article->setExcerpt($_POST['excerpt']);
@@ -13,9 +15,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $article->setCategoryId($_POST['category_id']);
     $article->setScheduledDate($_POST['scheduled_date']);
 
-    if (isset($_FILES['featured_image']) && $_FILES['featured_image']['error'] == 0) {
-        $article->setFeaturedImage($_FILES['featured_image']['name']);
+    if (isset($_POST['featured_image']) && !empty($_POST['featured_image'])) {
+        $imageUrl = $_POST['featured_image'];
+
+        if (filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+            $article->setFeaturedImage($imageUrl);
+        } else {
+            echo "L'URL de l'image est invalide.";
+            exit;
+        }
     }
+
     $tagIds = isset($_POST['tags']) ? $_POST['tags'] : [];
 
     if ($article->create($tagIds)) {
@@ -26,35 +36,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+// Suppression d article
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $articleId = (int)$_GET['id']; 
+    $articleId = (int)$_GET['id'];
     if ($articleId > 0) {
         if ($article->delete($articleId)) {
             header('Location: articles.php');
             exit;
         } else {
-            echo "Une erreur lors de la suppression de l'article.";
+            echo "Erreur lors de la suppression de l'article.";
         }
     }
 }
 
+// modifier l'article
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['update_article'])) {
-    $articleId = $_POST['id'];
-    $title = $_POST['title_edit'];
-    $content = $_POST['content_edit'];
-    $excerpt = $_POST['excerpt_edit'];
-    $metaDescription = $_POST['meta_description_edit'];
-    $categoryId = $_POST['category_id'];
-    $scheduledDate = $_POST['scheduled_date'];
-    $tagIds = isset($_POST['tags']) ? $_POST['tags'] : [];
-    $featuredImage = null;
+    $article->setId($_POST['id']);
+    $article->setTitle($_POST['title_edit'] ?? null);
+    $article->setContent($_POST['content_edit'] ?? null);
+    $article->setExcerpt($_POST['excerpt_edit'] ?? '');
+    $article->setMetaDescription($_POST['meta_description_edit'] ?? '');
+    $article->setCategoryId($_POST['category_id'] ?? null);
+    $article->setScheduledDate($_POST['scheduled_date'] ?? null);
 
-    if (isset($_FILES['featured_image']) && $_FILES['featured_image']['error'] === 0) {
-        $featuredImage = $_FILES['featured_image']['name'];
-        move_uploaded_file($_FILES['featured_image']['tmp_name'], '../uploads/' . $featuredImage);
+    // Si une nouvelle URL d'image est fournie
+    if (isset($_POST['featured_image']) && filter_var($_POST['featured_image'], FILTER_VALIDATE_URL)) {
+        // Mettre à jour l'URL de l'image
+        $article->setFeaturedImage($_POST['featured_image']);
     }
 
-    if ($article->update($articleId, $title, $content, $excerpt, $metaDescription, $categoryId, $scheduledDate, $featuredImage, $tagIds)) {
+    $tagIds = $_POST['tags'] ?? [];
+
+    // Validation des champs obligatoires
+    if (!$article->getTitle() || !$article->getContent() || !$article->getCategoryId()) {
+        echo "Les champs obligatoires sont manquants.";
+        exit;
+    }
+
+    // Appel à la méthode de mise à jour
+    if ($article->update($tagIds)) {
         header("Location: /Dev.to_Blogging_Plateform/admin/articles.php");
         exit;
     } else {

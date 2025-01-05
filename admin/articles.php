@@ -1,12 +1,10 @@
 <?php
 require_once __DIR__ . '/../config/Database.php';
-
 use App\Config\Database;
 
 try {
     $pdo = Database::connect();
-
-    $sql = "SELECT a.id AS article_id, a.title, a.slug, a.content, a.excerpt, a.meta_description, a.created_at, a.views, 
+    $sql = "SELECT a.id AS article_id, a.title, a.slug, a.content, a.featured_image, a.excerpt, a.meta_description, a.created_at, a.views, 
             c.name AS category_name, 
             COALESCE(GROUP_CONCAT(t.name), '') AS tags
             FROM articles a
@@ -119,6 +117,7 @@ $colors = [
                                         <tr>
                                             <th>ID</th>
                                             <th>Title</th>
+                                            <th>image</th>
                                             <th>Category</th>
                                             <th>Tags</th>
                                             <th>Views</th>
@@ -131,6 +130,7 @@ $colors = [
                                             <tr>
                                                 <td><?= htmlspecialchars($article['article_id']) ?></td>
                                                 <td><?= htmlspecialchars($article['title']) ?></td>
+                                                <td> <img src="<?= htmlspecialchars($article['featured_image']) ?>" class="article-image" alt="img" style="width: 30px; height: 30px;"></td>
                                                 <td><?= htmlspecialchars($article['category_name']) ?></td>
                                                 <td>
                                                     <?php

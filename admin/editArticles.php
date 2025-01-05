@@ -1,25 +1,26 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../src/Article.php'; 
 
 use App\Config\Database;
-use App\Src\Article;
 
-$article = new Src\Article();
+$articleObj = new Src\Article();
 
-$categories = $article->getCategories();
-$tags = $article->getTags();
+// Récupération des catégories et des tags
+$categories = $articleObj->getCategories();
+$tags = $articleObj->getTags();
 $currentArticle = null;
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $articleId = intval($_GET['id']);
 
     try {
-        $pdo = Database::connect();
- 
+        $pdo = Database::connect(); 
+
+        // Requête pour récupérer l'article spécifique avec ses catégories et tags
         $sql = "SELECT a.id, a.title, a.slug, a.content, a.excerpt, a.meta_description, a.created_at, a.views, 
-                c.name AS category_name, 
+                a.category_id, 
+                c.name AS name, 
                 COALESCE(GROUP_CONCAT(t.name), '') AS tags
                 FROM articles a
                 JOIN categories c ON a.category_id = c.id
@@ -33,18 +34,16 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         $stmt->execute();
         $currentArticle = $stmt->fetch(PDO::FETCH_ASSOC); 
 
-        if ($currentArticle === false) {
+        if (!$currentArticle) {
             die("Article non trouvé.");
         }
-        
     } catch (PDOException $e) {
         die("Erreur lors de la récupération de l'article : " . $e->getMessage());
     }
 
-    $articles = [];
+    // Récupération de tous les articles
     try {
-        $pdo = Database::connect();
-        $sql = "SELECT a.id AS article_id, a.title, c.name AS category_name, 
+        $sql = "SELECT a.id AS article_id, a.title,a.featured_image, c.name AS category_name, 
                     GROUP_CONCAT(t.name) AS tags, a.views, a.created_at
                 FROM articles a
                 JOIN categories c ON a.category_id = c.id
@@ -57,26 +56,24 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     } catch (PDOException $e) {
         die("Erreur lors de la récupération des articles : " . $e->getMessage());
     }
-
 } else {
     die("ID d'article non valide.");
 }
 
-// Préparer les données pour le graphique
-// $categories = [];
-// $counts = [];
-// Définir les couleurs pour le graphique
+
+// Couleurs pour graphiques
 $colors = [
-    'rgb(78, 115, 223)',    // primary
-    'rgb(28, 200, 138)',    // success
-    'rgb(54, 185, 204)',    // info
-    'rgb(246, 194, 62)',    // warning
-    'rgb(231, 74, 59)',     // danger
-    'rgb(133, 135, 150)',   // secondary
-    'rgb(90, 92, 105)',     // dark
-    'rgb(244, 246, 249)'    // light
+    'rgb(78, 115, 223)',    
+    'rgb(28, 200, 138)',    
+    'rgb(54, 185, 204)',    
+    'rgb(246, 194, 62)',    
+    'rgb(231, 74, 59)',     
+    'rgb(133, 135, 150)',   
+    'rgb(90, 92, 105)',     
+    'rgb(244, 246, 249)'    
 ];
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -185,7 +182,7 @@ $colors = [
                                                 <option value="">Choisissez une catégorie</option>
                                                 <?php foreach ($categories as $category): ?>
                                                     <option value="<?= $category['id'] ?>" 
-                                                        <?= $category['id'] == $currentArticle['category_id'] ? 'selected' : '' ?>>
+                                                        <?= $category['id'] == ($currentArticle['category_id'] ?? '') ? 'selected' : '' ?>>
                                                         <?= htmlspecialchars($category['name']) ?>
                                                     </option>
                                                 <?php endforeach; ?>
@@ -217,13 +214,23 @@ $colors = [
 
                                         <!-- Image -->
                                         <div class="mb-3">
-                                            <label for="article_featured_image" class="form-label">Image mise en avant</label>
-                                            <input type="file" class="form-control" id="article_featured_image" name="featured_image">
-                                            <?php if (!empty($currentArticle['featured_image'])): ?>
-                                                <img src="uploads/<?= htmlspecialchars($currentArticle['featured_image']) ?>" alt="Image actuelle" class="img-fluid mt-2" style="max-width: 200px;">
-                                            <?php endif; ?>
+                                            <label for="article_featured_image" class="form-label">Image mise en avant (URL)</label>
+                                            <input 
+                                                type="url" 
+                                                class="form-control" 
+                                                id="article_featured_image" 
+                                                name="featured_image" 
+                                                placeholder="Entrez l'URL de l'image"
+                                                value="<?= htmlspecialchars($currentArticle['featured_image'] ?? '') ?>">
                                         </div>
-
+                                        <div class="mb-3">
+                                            <label for="article_scheduled_date" class="form-label">Date de publication programmée</label>
+                                            <input 
+                                                type="datetime-local" 
+                                                class="form-control form-control-lg rounded shadow-sm" 
+                                                id="article_scheduled_date" 
+                                                name="scheduled_date">
+                                        </div>
                                         <!-- Boutons -->
                                         <div class="d-flex justify-content-between">
                                             <button type="submit" name="update_article" class="btn btn-primary">Modifier</button>
@@ -272,6 +279,7 @@ $colors = [
                                         <tr>
                                             <th>ID</th>
                                             <th>Title</th>
+                                            <th>Image</th>
                                             <th>Category</th>
                                             <th>Tags</th>
                                             <th>Views</th>
@@ -284,6 +292,7 @@ $colors = [
                                             <tr>
                                                 <td><?= htmlspecialchars($article['article_id']) ?></td>
                                                 <td><?= htmlspecialchars($article['title']) ?></td>
+                                                <td> <img src="<?= htmlspecialchars($article['featured_image']) ?>" class="article-image" alt="img" style="width: 30px; height: 30px;"></td>
                                                 <td><?= htmlspecialchars($article['category_name']) ?></td>
                                                 <td>
                                                     <?php
