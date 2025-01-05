@@ -7,6 +7,20 @@ use App\Src\Tag;
 
 $pdo = Database::connect();
 
+//afficher les tags
+try {
+    $tagModel = new Tag($pdo);
+    $tags = $tagModel->getAllTags();
+    if (!$tags) {
+        $tags = [];
+    }
+} catch (Exception $e) {
+    $tags = [];
+    echo "Erreur : " . $e->getMessage();
+}
+$tagLabels = array_column($tags, 'name');
+$tagCounts = array_column($tags, 'count'); 
+
 // Méthode CREATE 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tag_name'])) {
     $tagName = $_POST['tag_name'];
@@ -29,9 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tagEdit_name']) && is
 // Méthode DELETE 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id']) && is_numeric($_GET['id'])) {
     $id = intval($_GET['id']);
-    $tagManager = new tag($pdo);
+    $tagManager = new Tag($pdo);
     $tagManager->deleteTag($id);
     header("Location: tags.php");
     exit;
 }
-

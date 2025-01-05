@@ -1,11 +1,11 @@
 <?php
+
 namespace Src;
 require_once __DIR__ . '/../config/Database.php';
 use App\Config\Database;
 use PDO;
 
-class Article
-{
+class Article{
     private $id;
     private $title;
     private $slug;
@@ -15,7 +15,6 @@ class Article
     private $categoryId;
     private $authorId;
     private $featuredImage;
-    private $status;
     private $scheduledDate;
     private $createdAt;
     private $updatedAt;

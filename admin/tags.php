@@ -1,24 +1,6 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once '../src/tag.php';
-require_once '../config/Database.php';
-use App\Config\Database;
-use App\Src\tag;
-try {
-    $pdo = Database::connect();
-    $tagModel = new tag($pdo);
-    $tags = $tagModel->getAllTags();
-
-    if (!$tags) {
-        $tags = [];
-    }
-} catch (Exception $e) {
-    $tags = [];
-    echo "Erreur : " . $e->getMessage();
-}
-$tagLabels = array_column($tags, 'name');
-$tagCounts = array_column($tags, 'count'); 
-
+require_once __DIR__ . './crud_tags.php';
 ?>
 
 <!DOCTYPE html>

@@ -1,36 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/Database.php';
-use App\Config\Database;
-
-try {
-    $pdo = Database::connect();
-    $sql = "SELECT a.id AS article_id, a.title, a.slug, a.content, a.featured_image, a.excerpt, a.meta_description, a.created_at, a.views, 
-            c.name AS category_name, 
-            COALESCE(GROUP_CONCAT(t.name), '') AS tags
-            FROM articles a
-            JOIN categories c ON a.category_id = c.id
-            LEFT JOIN article_tags at ON a.id = at.article_id
-            LEFT JOIN tags t ON at.tag_id = t.id
-            GROUP BY a.id ";
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    die("Erreur lors de la récupération des articles : " . $e->getMessage());
-}
-
-// Define colors for the chart
-$colors = [
-    'rgb(78, 115, 223)',    // primary
-    'rgb(28, 200, 138)',    // success
-    'rgb(54, 185, 204)',    // info
-    'rgb(246, 194, 62)',    // warning
-    'rgb(231, 74, 59)',     // danger
-    'rgb(133, 135, 150)',   // secondary
-    'rgb(90, 92, 105)',     // dark
-    'rgb(244, 246, 249)'    // light
-];
+require_once __DIR__ . '/crud_articles.php';
 ?>
 
 <!DOCTYPE html>

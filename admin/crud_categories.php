@@ -7,6 +7,22 @@ use App\Src\Category;
 
 $pdo = Database::connect();
 
+//afficher les categories
+try {
+    $pdo = Database::connect();
+    $categoryModel = new Category($pdo);
+    $categories = $categoryModel->getAllCategory();
+
+    if (!$categories) {
+        $categories = [];
+    }
+} catch (Exception $e) {
+    $categories = [];
+    echo "Erreur : " . $e->getMessage();
+}
+$categoryLabels = array_column($categories, 'name');
+$categoryCounts = array_column($categories, 'count'); 
+
 // Méthode CREATE 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_name']) && !isset($_POST['category_id'])) {
     $categoryName = $_POST['category_name'];
