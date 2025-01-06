@@ -1,10 +1,10 @@
 <?php
-
 require_once '../src/Article.php';
 require_once '../config/Database.php';
 
 use Src\Article;
 use App\Config\Database;
+
 $article = new Article();
 
 //affiches les articles 
@@ -81,19 +81,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['update_article'])) {
 
     // Si une nouvelle URL d'image est fournie
     if (isset($_POST['featured_image']) && filter_var($_POST['featured_image'], FILTER_VALIDATE_URL)) {
-        // Mettre à jour l'URL de l'image
+        // Mettre a jour l'URL de l'image
         $article->setFeaturedImage($_POST['featured_image']);
     }
 
     $tagIds = $_POST['tags'] ?? [];
 
-    // Validation des champs obligatoires
+    // validation dse champs obligatoire
     if (!$article->getTitle() || !$article->getContent() || !$article->getCategoryId()) {
         echo "Les champs obligatoires sont manquants.";
         exit;
     }
 
-    // Appel à la méthode de mise à jour
+    // Appel a la methode update
     if ($article->update($tagIds)) {
         header("Location: /Dev.to_Blogging_Plateform/admin/articles.php");
         exit;

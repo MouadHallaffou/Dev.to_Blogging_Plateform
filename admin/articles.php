@@ -128,7 +128,7 @@ require_once __DIR__ . '/crud_articles.php';
                                                         <a href="crud_articles.php?id=<?= $article['article_id'] ?>"
                                                             class="btn btn-danger btn-sm delete-article"
                                                             data-id="<?= $article['article_id'] ?>"
-                                                            onclick="return confirm('vous etes rûr de supprimer cet article ?');">
+                                                            onclick="return confirm('vous etes rur de supprimer cet article ?');">
                                                             <i class="fas fa-trash"></i>
                                                         </a>
                                                     </div>

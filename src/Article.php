@@ -136,15 +136,15 @@ class Article{
         $categoryQuery->execute();
     
         if ($categoryQuery->fetchColumn() == 0) {
-            die('La catégorie spécifiée n\'existe pas.');
+            die('cette categorie ni existe pas.');
         }
         
         // Valider l URL de image mise en avant
         if (isset($_POST['featured_image'])) {
             $featuredImageUrl = trim($_POST['featured_image']);
-            // Vérifier si l'URL est valide
+            // virifier la validite de l url
             if (!filter_var($featuredImageUrl, FILTER_VALIDATE_URL)) {
-                die('L\'URL de l\'image mise en avant n\'est pas valide.');
+                die('l url de l image ni pas valide.');
             }
             $this->featuredImage = $featuredImageUrl;
         }
@@ -175,26 +175,26 @@ class Article{
         return false;
     } 
 
-    // Mise à jour d'un article
+    // modifier article
     public function update($tagIds = []){
-        // Vérifier si la catégorie existe
+        // verifier l'existance de la categorie
         $categoryQuery = self::$db->prepare("SELECT COUNT(*) FROM categories WHERE id = :category_id");
         $categoryQuery->bindParam(':category_id', $this->categoryId);
         $categoryQuery->execute();
 
         if ($categoryQuery->fetchColumn() == 0) {
-            die('La catégorie spécifiée n\'existe pas.');
+            die('cette categorie ni existe pas.');
         }
 
-        // Générer un slug mis à jour
+        // Generer le slug du titre modifier
         $slug = $this->generateSlug($this->title);
         if ($this->slugExists($slug)) {
             $slug = $this->generateUniqueSlug($slug);
         }
 
-        // Valider l URL de l'image
+        // Valider l URL pour l'image
         if (!empty($this->featuredImage) && !filter_var($this->featuredImage, FILTER_VALIDATE_URL)) {
-            die('L\'URL de l\'image mise en avant n\'est pas valide.');
+            die('le URL de cette image non valide.');
         }
 
         // update article

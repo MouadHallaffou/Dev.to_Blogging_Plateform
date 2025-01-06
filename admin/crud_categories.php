@@ -9,7 +9,6 @@ $pdo = Database::connect();
 
 //afficher les categories
 try {
-    $pdo = Database::connect();
     $categoryModel = new Category($pdo);
     $categories = $categoryModel->getAllCategory();
 
