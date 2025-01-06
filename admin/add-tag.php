@@ -1,21 +1,6 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once '../src/Tag.php';
-require_once '../config/Database.php';
-use App\Config\Database;
-use App\Src\Tag;
-
-try {
-    $pdo = Database::connect();
-    $tagModel = new Tag($pdo);
-    $tags = $tagModel->getAllTags() ?: [];
-} catch (Exception $e) {
-    $tags = [];
-    echo "<div class='alert alert-danger'>Erreur : " . htmlspecialchars($e->getMessage()) . "</div>";
-}
-
-$tagLabels = array_column($tags, 'name');
-$tagCounts = array_column($tags, 'count'); 
+require_once __DIR__ . './crud_tags.php';
 ?>
 
 <!DOCTYPE html>

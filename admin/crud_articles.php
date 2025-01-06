@@ -10,7 +10,7 @@ $article = new Article();
 //affiches les articles 
 try {
     $pdo = Database::connect();
-    $sql = "SELECT a.id AS article_id, a.title, a.slug, a.content, a.featured_image, a.excerpt, a.meta_description, a.created_at, a.views, 
+    $sql = "SELECT a.id AS article_id, a.title, a.slug, a.content, a.featured_image, a.excerpt,a.status, a.meta_description, a.created_at, a.views, 
             c.name AS category_name, 
             COALESCE(GROUP_CONCAT(t.name), '') AS tags
             FROM articles a

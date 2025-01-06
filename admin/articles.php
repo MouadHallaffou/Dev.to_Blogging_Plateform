@@ -115,8 +115,22 @@ require_once __DIR__ . '/crud_articles.php';
                                                     ?>
                                                 </td>
                                                 <td data-order="<?= $article['views'] ?>">
-                                                    <?= number_format($article['views']) ?>
-                                                </td>
+                                                    <?= number_format($article['views']) ?></td>
+
+                                                <td>
+                                                <?php
+                                                $status = htmlspecialchars($article['status']);
+                                                if ($status == 'soumis') {
+                                                    $badgeClass = 'badge-warning';
+                                                } elseif ($status == 'accepte') {
+                                                    $badgeClass = 'badge-success'; 
+                                                } elseif ($status == 'refused') {
+                                                    $badgeClass = 'badge-danger'; 
+                                                }
+                                                ?>
+                                                <span class="badge <?= $badgeClass ?> mr-1"><?= $status ?></span>
+                                               </td>
+                                               
                                                 <td data-order="<?= strtotime($article['created_at']) ?>">
                                                     <?= date('M d, Y H:i', strtotime($article['created_at'])) ?>
                                                 </td>

@@ -1,41 +1,6 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once '../src/Tag.php';
-require_once '../config/Database.php';
-use App\Config\Database;
-use App\Src\tag;
-
-$tag = null;
-
-try {
-    $pdo = Database::connect();
-    $tagModel = new Tag($pdo);
-    $tags = $tagModel->getAlltags();
-
-    if (!$tags) {
-        $tags = [];
-    }
-
-    if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id']) && is_numeric($_GET['id'])) {
-        $tagId = $_GET['id'];
-
-        $tagData = $tagModel->selectEntries('tags', '*', 'id = ?', [$tagId]);
-
-        if ($tagData) {
-            $tag = $tagData[0]; 
-        } else {
-            echo "tags non trouve.";
-            exit; 
-        }
-    }
-
-} catch (Exception $e) {
-    echo "Erreur : " . $e->getMessage();
-    exit;
-}
-
-$tagLabels = array_column($tags, 'name');
-$tagCounts = array_column($tags, 'count');
+require_once __DIR__ . './crud_tags.php';
 ?>
 
 <!DOCTYPE html>

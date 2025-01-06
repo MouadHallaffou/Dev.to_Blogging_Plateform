@@ -1,13 +1,8 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once 'config/Database.php'; 
-require_once 'src/BaseModel.php';
-require_once 'src/Category.php';
-require_once 'src/User.php';
 
 use App\Config\Database;
-use App\Src\Category;
-use App\Src\User;
+
 
 try {
     $db = new Database();

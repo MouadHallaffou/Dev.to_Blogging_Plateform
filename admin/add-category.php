@@ -1,21 +1,6 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once '../src/Category.php';
-require_once '../config/Database.php';
-use App\Config\Database;
-use App\Src\Category;
-
-try {
-    $pdo = Database::connect();
-    $categoryModel = new Category($pdo);
-    $categories = $categoryModel->getAllCategory() ?: [];
-} catch (Exception $e) {
-    $categories = [];
-    echo "<div class='alert alert-danger'>Erreur : " . htmlspecialchars($e->getMessage()) . "</div>";
-}
-
-$categoryLabels = array_column($categories, 'name');
-$categoryCounts = array_column($categories, 'count'); 
+require_once __DIR__ . './crud_categories.php';
 ?>
 
 <!DOCTYPE html>

@@ -63,17 +63,17 @@
             </div>
             <div class="form-content">
                 <h2>SIGNUP</h2>
-                <form action="#">
+                <form action="processSignUp.php" method="POST">
                     <div class="input-field">
-                        <input type="text" required>
+                        <input type="text" name="username" required>
                         <label>Enter your Username</label>
                     </div>
                     <div class="input-field">
-                        <input type="email" required>
+                        <input type="email" name="email" required>
                         <label>Enter your email</label>
                     </div>
                     <div class="input-field">
-                        <input type="password" required>
+                        <input type="password" name="password" required>
                         <label>Create password</label>
                     </div>
                     <div class="policy-text">
