@@ -24,22 +24,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         try {
             if ($user->save()) {
-                $_SESSION['message'] = 'Inscription réussie';
-                header("Location: login.php");
+                $_SESSION['message'] = 'Inscription avec succes';
+                header("Location: succesSignUp.php");
                 exit;
             }
         } catch (Exception $e) {
-            $_SESSION['error'] = 'Erreur lors de l\'inscription : ' . $e->getMessage();
-            header("Location: signup.php");
+            $_SESSION['error'] = 'Erreur lors d inscription : ' . $e->getMessage();
+            header("Location: UserSingUp.php");
             exit;
         }
     } else {
-        $_SESSION['error'] = 'Veuillez remplir tous les champs';
-        header("Location: signup.php");
+        $_SESSION['error'] = 'vous vouller remplir tous les champs';
+        header("Location: UserSingUp.php");
         exit;
     }
 } else {
-    $_SESSION['error'] = 'Méthode de requête non autorisée';
-    header("Location: signup.php");
+    $_SESSION['error'] = 'mhethode de la requete non autorise';
+    header("Location: UserSingUp.php");
     exit;
 }

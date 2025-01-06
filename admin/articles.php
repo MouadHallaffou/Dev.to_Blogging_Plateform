@@ -91,6 +91,7 @@ require_once __DIR__ . '/crud_articles.php';
                                             <th>Category</th>
                                             <th>Tags</th>
                                             <th>Views</th>
+                                            <th>status</th>
                                             <th>Created At</th>
                                             <th>Actions</th>
                                         </tr>

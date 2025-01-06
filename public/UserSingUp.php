@@ -1,13 +1,22 @@
+<?php
+require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../admin/crud_articles.php';
+require_once __DIR__ . '/crud_user.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website with Login and Registration Form | Mouad Hallaffou</title>
+    <title>Login and Registration Form | Dev blog</title>
     <!-- Google Fonts Link For Icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0">
     <link rel="stylesheet" href="./assets/css/styleLogin.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
+
 <body>
     <header>
         <nav class="navbar">
@@ -28,7 +37,44 @@
         </nav>
     </header>
 
-    <div class="blur-bg-overlay"></div>
+    <div class="py-16 bg-gray-900 text-white z-0">
+    <div class="container mx-auto px-4 lg:px-8">
+
+        <!-- Articles Grid -->
+        <div class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <?php foreach ($articles as $article) : ?>
+                <article class="bg-gray-800 rounded-lg shadow-md overflow-hidden flex flex-col">
+                    <!-- Article Metadata -->
+                    <div class="p-4 flex items-center text-xs text-gray-400">
+                        <time datetime="<?= htmlspecialchars($article['created_at']) ?>">Creer le : 
+                            <?= htmlspecialchars($article['created_at']) ?>
+                        </time>
+                        <span class="ml-auto bg-gray-700 text-white rounded-full px-3 py-1">
+                            <?= htmlspecialchars($article['category_name']) ?>
+                        </span>
+                    </div>
+
+                    <!-- Article Content -->
+                    <div class="p-4 flex flex-col flex-grow">
+                        <h3 class="text-lg font-semibold text-gray-100 mb-2 hover:text-indigo-400">
+                            Titre : <a href="#"><?= htmlspecialchars($article['title']) ?></a>
+                        </h3>
+                        <p class="text-sm text-gray-300 mb-4 line-clamp-3">
+                            <?= htmlspecialchars($article['content']) ?>
+                        </p>
+                    </div>
+
+                    <!-- Read More -->
+                    <div class="p-4 mt-auto">
+                        <a href="#" class="text-indigo-400 font-medium hover:text-indigo-500">Read more →</a>
+                    </div>
+                </article>
+            <?php endforeach; ?>
+        </div>
+    </div>
+ </div>
+
+ <div class="blur-bg-overlay"></div>
     <div class="form-popup">
         <span class="close-btn material-symbols-rounded">close</span>
         <div class="form-box login">
@@ -86,7 +132,7 @@
                     <button type="submit">Sign Up</button>
                 </form>
                 <div class="bottom-link">
-                    Already have an account? 
+                    Already have an account?
                     <a href="#" id="login-link">Login</a>
                 </div>
             </div>
@@ -94,4 +140,5 @@
     </div>
     <script src="./assets/js/scriptlogin.js"></script>
 </body>
+
 </html>
