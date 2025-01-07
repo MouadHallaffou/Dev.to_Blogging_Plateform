@@ -78,19 +78,21 @@ require_once __DIR__ . '/crud_user.php';
     <div class="form-popup">
         <span class="close-btn material-symbols-rounded">close</span>
         <div class="form-box login">
+            
             <div class="form-details">
                 <h2>Welcome Back</h2>
                 <p>Please log in using your personal information to stay connected with us.</p>
             </div>
+
             <div class="form-content">
                 <h2>LOGIN</h2>
-                <form action="#">
+                <form action="processLogin.php" method="POST">
                     <div class="input-field">
-                        <input type="text" required>
+                        <input type="text" name="email" required>
                         <label>Email</label>
                     </div>
                     <div class="input-field">
-                        <input type="password" required>
+                        <input type="password" name="password" required>
                         <label>Password</label>
                     </div>
                     <a href="#" class="forgot-pass-link">Forgot password?</a>

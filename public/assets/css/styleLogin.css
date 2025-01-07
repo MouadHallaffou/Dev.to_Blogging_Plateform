@@ -355,3 +355,15 @@ form button:hover {
         padding: 30px 20px;
     }
 }
+
+.error {
+    color: red;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.message {
+    color: green;
+    text-align: center;
+    margin: 10px 0;
+}

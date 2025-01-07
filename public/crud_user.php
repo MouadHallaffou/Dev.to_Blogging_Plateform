@@ -5,7 +5,7 @@ use PDO;
 use PDOException;
 
 class UserCrud{
-    public static function getUsersCount(): int
+    public static function getUsersCount()
     {
         try {
             $connection = Database::connect();
