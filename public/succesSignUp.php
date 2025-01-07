@@ -1,273 +1,92 @@
 <?php
+session_start();
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../admin/crud_articles.php';
+require_once __DIR__ . '/crud_user.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>DevBlog - Dashboard</title>
-
-    <!-- Custom fonts for this template-->
-    <link rel="stylesheet" href="../admin/vendor/fontawesome-free/css/all.min.css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link href="../admin/css/sb-admin-2.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Registration Form | Dev blog</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,0,0">
+    <link rel="stylesheet" href="./assets/css/styleLogin.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 
 </head>
 
-<body id="page-top">
-
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-
-        <?php include '../admin/components/sidebar.php'; ?>
-
-
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
-            <div id="content">
-
-                <?php include '../admin/components/topbar.php'; ?>
-
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-
-                    <!-- Page Heading -->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                    </div>
-
-                    <!-- Content Row -->
-                    <div class="row">
-
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Articles</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= count($articles) ?></div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-newspaper fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    <!-- Content Row -->
-
-                    <!-- DataTales Example -->
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Recent Articles</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive overflow-auto" style="max-height: 260px;">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Title</th>
-                                            <th>image</th>
-                                            <th>Category</th>
-                                            <th>Tags</th>
-                                            <th>Views</th>
-                                            <th>status</th>
-                                            <th>Created At</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($articles as $article): ?>
-                                            <tr>
-                                                <td><?= htmlspecialchars($article['article_id']) ?></td>
-                                                <td><?= htmlspecialchars($article['title']) ?></td>
-                                                <td> <img src="<?= htmlspecialchars($article['featured_image']) ?>" class="article-image" alt="img" style="width: 30px; height: 30px;"></td>
-                                                <td><?= htmlspecialchars($article['category_name']) ?></td>
-                                                <td>
-                                                    <?php
-                                                    if (!empty($article['tags'])) {
-                                                        $tags = explode(',', $article['tags']);
-                                                        foreach ($tags as $tag) {
-                                                            echo '<span class="badge badge-primary mr-1">' . htmlspecialchars($tag) . '</span>';
-                                                        }
-                                                    } else {
-                                                        echo '<span class="badge badge-secondary">Aucun tag</span>';
-                                                    }
-                                                    ?>
-                                                </td>
-                                                <td data-order="<?= $article['views'] ?>">
-                                                    <?= number_format($article['views']) ?></td>
-
-                                                <td>
-                                                <?php
-                                                $status = htmlspecialchars($article['status']);
-                                                if ($status == 'soumis') {
-                                                    $badgeClass = 'badge-warning';
-                                                } elseif ($status == 'accepte') {
-                                                    $badgeClass = 'badge-success'; 
-                                                } elseif ($status == 'refused') {
-                                                    $badgeClass = 'badge-danger'; 
-                                                }
-                                                ?>
-                                                <span class="badge <?= $badgeClass ?> mr-1"><?= $status ?></span>
-                                               </td>
-                                               
-                                                <td data-order="<?= strtotime($article['created_at']) ?>">
-                                                    <?= date('M d, Y H:i', strtotime($article['created_at'])) ?>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex justify-content-around">
-                                                        <a href="editArticles.php?id=<?= $article['article_id'] ?>" class="btn btn-primary btn-sm">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <a href="crud_articles.php?id=<?= $article['article_id'] ?>"
-                                                            class="btn btn-danger btn-sm delete-article"
-                                                            data-id="<?= $article['article_id'] ?>"
-                                                            onclick="return confirm('vous etes rur de supprimer cet article ?');">
-                                                            <i class="fas fa-trash"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <!-- /.container-fluid -->
-
+<body>
+    <header>
+        <nav class="navbar">
+            <span class="hamburger-btn material-symbols-rounded">menu</span>
+            <a href="#" class="logo">
+                <img src="./assets/images/logo.jpg" alt="logo">
+                <h2>Dev Blogging</h2>
+            </a>
+            <ul class="links">
+                <span class="close-btn material-symbols-rounded">close</span>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Articles</a></li>
+                <li><a href="#">Courses</a></li>
+                <li><a href="#">About us</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+            <?php if (isset($_SESSION['username'])): ?>
+            <div class="user-greeting flex items-center text-white text-lg ml-20">
+                <p><?= htmlspecialchars($_SESSION['username']) ?></p>
+                <img src="../admin/img/undraw_profile_2.svg" alt="Profile Picture" class="h-8 w-8 rounded-full ml-1">
             </div>
-            <!-- End of Main Content -->
+            <button class="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition"
+                    onclick="window.location.href='UserSingUp.php'">Log Out
+            </button>
+        <?php else: ?>
+            <button class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition"
+                    onclick="window.location.href='UserSignUp.php'">Sign Up
+            </button>
+        <?php endif; ?>
+        </nav>
+    </header>
 
-            <?php include '../admin/components/footer.php'; ?>
+    <div class="py-16 text-white z-0">
+        <div class="container mx-auto px-4 lg:px-8">
+            <!--Grid -->
+            <div class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                <?php foreach ($articles as $article) : ?>
+                    <article class="bg-gray-800 rounded-lg shadow-md overflow-hidden flex flex-col">
+                        <!--  -->
+                        <div class="p-4 flex items-center text-xs text-gray-400">
+                            <time datetime="<?= htmlspecialchars($article['created_at']) ?>">Creer le : 
+                                <?= htmlspecialchars($article['created_at']) ?>
+                            </time>
+                            <span class="ml-auto bg-gray-700 text-white rounded-full px-3 py-1">
+                                <?= htmlspecialchars($article['category_name']) ?>
+                            </span>
+                        </div>
 
-        </div>
-        <!-- End of Content Wrapper -->
+                        <!-- Content -->
+                        <div class="p-4 flex flex-col flex-grow">
+                            <h3 class="text-lg font-semibold text-gray-100 mb-2 hover:text-indigo-400">
+                                Titre : <a href="#"><?= htmlspecialchars($article['title']) ?></a>
+                            </h3>
+                            <p class="text-sm text-gray-300 mb-4 line-clamp-3">
+                                <?= htmlspecialchars($article['content']) ?>
+                            </p>
+                        </div>
 
-    </div>
-    <!-- End of Page Wrapper -->
-
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.php">Logout</a>
-                </div>
+                        <div class="p-4 mt-auto">
+                            <a href="#" class="text-indigo-400 font-medium hover:text-indigo-500">Read more →</a>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="../admin/vendor/jquery/jquery.min.js"></script>
-    <script src="../admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <div class="blur-bg-overlay"></div>
 
-    <!-- Core plugin JavaScript-->
-    <script src="../admin/vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="../admin/js/sb-admin-2.min.js"></script>
-
-    <!-- Page level plugins -->
-    <script src="../admin/vendor/chart.js/Chart.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="../admin/js/demo/chart-area-demo.js"></script>
-    <script src="../admin/js/demo/chart-pie-demo.js"></script>
-    <!-- Initialize the pie chart -->
-    <script>
-        // Set new default font family and font color to mimic Bootstrap's default styling
-        Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-        Chart.defaults.global.defaultFontColor = '#858796';
-
-        // Pie Chart
-        var ctx = document.getElementById("categoryPieChart");
-        var categoryPieChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: <?= json_encode($categories) ?>,
-                datasets: [{
-                    data: <?= json_encode($counts) ?>,
-                    backgroundColor: <?= json_encode(array_slice($colors, 0, count($categories))) ?>,
-                    hoverBackgroundColor: <?= json_encode(array_slice($colors, 0, count($categories))) ?>,
-                    hoverBorderColor: "rgba(234, 236, 244, 1)",
-                }],
-            },
-            options: {
-                maintainAspectRatio: false,
-                tooltips: {
-                    backgroundColor: "rgb(255,255,255)",
-                    bodyFontColor: "#858796",
-                    borderColor: '#dddfeb',
-                    borderWidth: 1,
-                    xPadding: 15,
-                    yPadding: 15,
-                    displayColors: false,
-                    caretPadding: 10,
-                    callbacks: {
-                        label: function(tooltipItem, data) {
-                            var dataset = data.datasets[tooltipItem.datasetIndex];
-                            var total = dataset.data.reduce(function(previousValue, currentValue) {
-                                return previousValue + currentValue;
-                            });
-                            var currentValue = dataset.data[tooltipItem.index];
-                            var percentage = Math.floor(((currentValue / total) * 100) + 0.5);
-                            return data.labels[tooltipItem.index] + ': ' + currentValue + ' (' + percentage + '%)';
-                        }
-                    }
-                },
-                legend: {
-                    display: false
-                },
-                cutoutPercentage: 80,
-            },
-        });
-    </script>
-
-    <!-- Page level plugins -->
-    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="../admin/js/demo/datatables-demo.js"></script>
+    <script src="./assets/js/scriptlogin.js"></script>
 </body>
 
 </html>

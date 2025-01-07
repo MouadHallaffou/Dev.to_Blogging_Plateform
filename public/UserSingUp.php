@@ -37,7 +37,7 @@ require_once __DIR__ . '/crud_user.php';
         </nav>
     </header>
 
-    <div class="py-16 bg-gray-900 text-white z-0">
+    <div class="py-16 text-white z-0">
     <div class="container mx-auto px-4 lg:px-8">
 
         <!-- Articles Grid -->

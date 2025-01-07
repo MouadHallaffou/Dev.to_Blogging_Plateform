@@ -307,64 +307,63 @@ foreach ($category_stats as $stat) {
                                     <thead>
                                         <tr>
                                             <th>Title</th>
-                                            <th>Author</th>
+                                            <!-- <th>Author</th> -->
                                             <th>Category</th>
                                             <th>Tags</th>
                                             <th>Views</th>
                                             <th>Created At</th>
+                                            <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <!-- <tbody>
-                                    <?php foreach ($articles as $article): ?>
-                                        <tr>
-                                            <td>
-                                               
-                                                <?= htmlspecialchars($article['title']) ?>
-                                            </td>
-                                            <td><?= htmlspecialchars($article['author_name']) ?></td>
-                                            <td><?= htmlspecialchars($article['category_name']) ?></td>
-                                            <td>
-                                                <?php
-                                                if ($article['tags']) {
-                                                    $tags = explode(',', $article['tags']);
-                                                    foreach ($tags as $tag) {
-                                                        echo '<span class="badge badge-primary mr-1">' . htmlspecialchars($tag) . '</span>';
+                                    <tbody>
+                                        <?php foreach ($articles as $article): ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($article['title']) ?></td>
+                                                <!-- <td><?= htmlspecialchars($article['author_name']) ?></td> -->
+                                                <td><?= htmlspecialchars($article['category_name']) ?></td>
+                                                <td>
+                                                    <?php
+                                                    if (!empty($article['tags'])) {
+                                                        $tags = explode(',', $article['tags']);
+                                                        foreach ($tags as $tag) {
+                                                            echo '<span class="badge badge-primary mr-1">' . htmlspecialchars($tag) . '</span>';
+                                                        }
                                                     }
-                                                }
-                                                ?>
-                                            </td>
-                                            <td data-order="<?= $article['views'] ?>">
-                                                <?= number_format($article['views']) ?>
-                                            </td>
-                                            <td data-order="<?= strtotime($article['created_at']) ?>">
-                                                <?= date('M d, Y H:i', strtotime($article['created_at'])) ?>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group">
-                                                    <a href="view-article.php?id=<?= $article['id'] ?>" 
-                                                    class="btn btn-info btn-sm">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    <a href="edit-article.php?id=<?= $article['id'] ?>" 
-                                                    class="btn btn-primary btn-sm">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <button type="button" 
-                                                            class="btn btn-danger btn-sm delete-article" 
-                                                            data-id="<?= $article['id'] ?>">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    </tbody> -->
+                                                    ?>
+                                                </td>
+                                                <td><?= number_format($article['views']) ?></td>
+                                                <td><?= date('M d, Y H:i', strtotime($article['created_at'])) ?></td>
+                                                <td>
+                                                    <span class="badge badge-<?= $article['status'] === 'soumis' ? 'warning' : ($article['status'] === 'accepte' ? 'success' : 'danger') ?>">
+                                                        <?= ucfirst($article['status']) ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <form action="change-status.php" method="POST" style="display:inline;">
+                                                        <input type="hidden" name="article_id" value="<?= $article['article_id'] ?>">
+                                                        <input type="hidden" name="status" value="accepte">
+                                                        <button type="submit" class="btn btn-success btn-sm" 
+                                                                <?= $article['status'] !== 'soumis' ? 'disabled' : '' ?>>
+                                                            Accepter
+                                                        </button>
+                                                    </form>
+                                                    <form action="change-status.php" method="POST" style="display:inline;">
+                                                        <input type="hidden" name="article_id" value="<?= $article['article_id'] ?>">
+                                                        <input type="hidden" name="status" value="refuse">
+                                                        <button type="submit" class="btn btn-danger btn-sm" 
+                                                                <?= $article['status'] !== 'soumis' ? 'disabled' : '' ?>>
+                                                            Refuser
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <!-- /.container-fluid -->
 

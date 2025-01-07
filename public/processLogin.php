@@ -8,23 +8,21 @@ use App\Src\User;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['email'], $_POST['password'])) {
-        $email = $_POST['email'];
+        $email = trim($_POST['email']);
         $password = $_POST['password'];
 
         try {
             $pdo = Database::connect();
             $user = new User($pdo);
 
-            // Verifie lexistance de l'etulisateur
             $foundUser = $user->findByEmail($email);
 
-            if ($foundUser && password_verify($password, $foundUser['password_hash'])) {
-                // user authentifie
+            if ($foundUser !== null && password_verify($password, $foundUser['password_hash'])) {
                 $_SESSION['user_id'] = $foundUser['id_user'];
                 $_SESSION['username'] = $foundUser['username'];
                 $_SESSION['role'] = $foundUser['role'];
 
-                header("Location: succesSignUp.php");
+                header("Location: succesSignUp.php"); 
                 exit;
             } else {
                 $_SESSION['error'] = 'Email ou mot de passe incorrect.';
@@ -32,17 +30,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
         } catch (Exception $e) {
-            $_SESSION['error'] = 'Erreur lors de la connexion : ' . $e->getMessage();
-            header("Location: userSignUp.php");
+            $_SESSION['error'] = 'Erreur lors de la connexion : ' . htmlspecialchars($e->getMessage());
+            header("Location: UserSingUp.php");
             exit;
         }
     } else {
         $_SESSION['error'] = 'Veuillez remplir tous les champs.';
-        header("Location: userSignUp.php");
+        header("Location: UserSingUp.php");
         exit;
     }
 } else {
     $_SESSION['error'] = 'Méthode de requête non autorisée.';
-    header("Location: userSignUp.php");
+    header("Location: UserSingUp.php");
     exit;
 }
