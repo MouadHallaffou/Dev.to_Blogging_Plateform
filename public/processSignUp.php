@@ -30,16 +30,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         } catch (Exception $e) {
             $_SESSION['error'] = 'Erreur lors d inscription : ' . $e->getMessage();
-            header("Location: UserSingUp.php");
+            header("Location: index.php");
             exit;
         }
     } else {
         $_SESSION['error'] = 'vous vouller remplir tous les champs';
-        header("Location: UserSingUp.php");
+        header("Location: index.php");
         exit;
     }
 } else {
     $_SESSION['error'] = 'mhethode de la requete non autorise';
-    header("Location: UserSingUp.php");
+    header("Location: index.php");
     exit;
 }

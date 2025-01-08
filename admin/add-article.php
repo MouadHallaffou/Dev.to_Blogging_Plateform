@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/Database.php';
-require_once '../src/Article.php';
+require_once __DIR__ . '../src/Article.php';
 
 use App\Config\Database;
 

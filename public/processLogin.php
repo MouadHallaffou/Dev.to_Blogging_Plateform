@@ -26,21 +26,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             } else {
                 $_SESSION['error'] = 'Email ou mot de passe incorrect.';
-                header("Location: UserSingUp.php");
+                header("Location: index.php");
                 exit;
             }
         } catch (Exception $e) {
             $_SESSION['error'] = 'Erreur lors de la connexion : ' . htmlspecialchars($e->getMessage());
-            header("Location: UserSingUp.php");
+            header("Location: index.php");
             exit;
         }
     } else {
         $_SESSION['error'] = 'Veuillez remplir tous les champs.';
-        header("Location: UserSingUp.php");
+        header("Location: index.php");
         exit;
     }
 } else {
     $_SESSION['error'] = 'Méthode de requête non autorisée.';
-    header("Location: UserSingUp.php");
+    header("Location: index.php");
     exit;
 }

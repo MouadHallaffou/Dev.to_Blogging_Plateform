@@ -49,7 +49,7 @@ try {
                                     <thead>
                                         <tr>
                                             <th>ID</th>
-                                            <th>utilisateur</th>
+                                            <th>Utilisateur</th>
                                             <th>Email</th>
                                             <th>Actions</th>
                                         </tr>

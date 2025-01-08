@@ -1,8 +1,8 @@
 <?php
-session_start();
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../admin/crud_articles.php';
 require_once __DIR__ . '/crud_user.php';
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -42,10 +42,13 @@ require_once __DIR__ . '/crud_user.php';
                     Log Out
                 </a>
             <?php else: ?>
-                <a href="UserSingUp.php" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
+                <a href="index.php" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
                     Log In
                 </a>
             <?php endif; ?>
+            <a href="../../Dev.to_Blogging_Plateform/admin/articles.php" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
+                    Add Articles
+                </a> 
         </nav>
     </header>
 

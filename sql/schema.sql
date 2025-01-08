@@ -15,19 +15,6 @@ CREATE TABLE users (
     role ENUM('user', 'author', 'admin') NOT NULL DEFAULT 'user'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- authors table
-CREATE TABLE authors (
-    id_author BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id_user) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- admins table
-CREATE TABLE admins (
-    id_admin BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id_user) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- categories table
 CREATE TABLE categories (

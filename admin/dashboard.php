@@ -171,7 +171,7 @@ foreach ($category_stats as $stat) {
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <?php foreach ($top_users as $index => $user): ?>
+                                    <!-- <?php foreach ($top_users as $index => $user): ?>
                                         <div class="d-flex align-items-center mb-3">
                                             <div class="mr-3">
                                                 <div class="icon-circle bg-primary text-white">
@@ -204,7 +204,7 @@ foreach ($category_stats as $stat) {
                                         <?php if ($index < count($top_users) - 1): ?>
                                             <hr>
                                         <?php endif; ?>
-                                    <?php endforeach; ?>
+                                    <?php endforeach; ?> -->
                                 </div>
                             </div>
 
