@@ -18,6 +18,7 @@ try {
             JOIN categories c ON a.category_id = c.id
             LEFT JOIN article_tags at ON a.id = at.article_id
             LEFT JOIN tags t ON at.tag_id = t.id
+            WHERE a.status = 'accepte'
             GROUP BY a.id ";
 
     $stmt = $pdo->prepare($sql);
