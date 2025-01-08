@@ -34,18 +34,18 @@ require_once __DIR__ . '/crud_user.php';
                 <li><a href="#">Contact us</a></li>
             </ul>
             <?php if (isset($_SESSION['username'])): ?>
-            <div class="user-greeting flex items-center text-white text-lg ml-20">
-                <p><?= htmlspecialchars($_SESSION['username']) ?></p>
-                <img src="../admin/img/undraw_profile_2.svg" alt="Profile Picture" class="h-8 w-8 rounded-full ml-1">
-            </div>
-            <button class="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition"
-                    onclick="window.location.href='UserSingUp.php'">Log Out
-            </button>
-        <?php else: ?>
-            <button class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition"
-                    onclick="window.location.href='UserSignUp.php'">Sign Up
-            </button>
-        <?php endif; ?>
+                <div class="user-greeting flex items-center text-white text-lg ml-20">
+                    <p><?= htmlspecialchars($_SESSION['username']) ?></p>
+                    <img src="../admin/img/undraw_profile_2.svg" alt="Profile Picture" class="h-8 w-8 rounded-full ml-1">
+                </div>
+                <a href="logout.php" class="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition">
+                    Log Out
+                </a>
+            <?php else: ?>
+                <a href="UserSingUp.php" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
+                    Log In
+                </a>
+            <?php endif; ?>
         </nav>
     </header>
 

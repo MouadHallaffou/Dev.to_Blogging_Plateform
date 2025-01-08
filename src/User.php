@@ -6,6 +6,7 @@ use PDOException;
 
 class User {
     private PDO $pdo;
+    private $id;
     private string $username;
     private string $email;
     private string $passwordHash;
@@ -25,7 +26,9 @@ class User {
     public function setPasswordHash(string $passwordHash): void {
         $this->passwordHash = $passwordHash;
     }
-
+    public function setId($id){
+        $this->id = $id;
+    }
     public function save(): bool {
         $query = "INSERT INTO users (username, email, password_hash) VALUES (:username, :email, :password_hash)";
         $stmt = $this->pdo->prepare($query);
@@ -56,5 +59,12 @@ class User {
 
     public static function hashPassword(string $password): string {
         return password_hash($password, PASSWORD_BCRYPT);
+    }
+
+    public function asignRole(){
+        $query = "UPDATE users SET role = 'author' WHERE id_user = :id";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->bindParam(':id' , $this->id, PDO::PARAM_STR);
+        $stmt->execute();
     }
 }

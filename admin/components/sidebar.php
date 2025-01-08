@@ -93,9 +93,9 @@
                 </a>
                 <div id="collapseAuthors" class="collapse" aria-labelledby="headingAuthors" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Author Management:</h6>
-                        <a class="collapse-item" href="authors.php">View All Authors</a>
-                        <a class="collapse-item" href="add-author.php">Add New Author</a>
+                        <h6 class="collapse-header">User Management:</h6>
+                        <a class="collapse-item" href="/Dev.to_Blogging_Plateform/admin/AllUsers.php">View All Users</a>
+                        <a class="collapse-item" href="/Dev.to_Blogging_Plateform/admin/Authors.php">Authors</a>
                         <a class="collapse-item" href="author-roles.php">Manage Roles</a>
                     </div>
                 </div>

@@ -7,7 +7,7 @@ use App\Config\Database;
 
 $article = new Article();
 
-//affiches les articles 
+//affiches les articles acepted par l'admin
 try {
     $pdo = Database::connect();
     $sql = "SELECT a.id AS article_id, a.title, a.slug, a.content, a.featured_image, a.excerpt,a.status, 
@@ -102,4 +102,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['update_article'])) {
     } else {
         echo "Erreur lors de la mise à jour de l'article.";
     }
+}
+
+//affiches les articles soumis dans dashboard pour l'admin:
+try {
+    $pdo = Database::connect();
+    $sql = "SELECT a.id AS article_id, a.title, a.slug, a.content, a.featured_image, a.excerpt,a.status, 
+            a.meta_description, DATE(a.created_at) AS created_at, a.views, 
+            c.name AS category_name, 
+            COALESCE(GROUP_CONCAT(t.name), '') AS tags
+            FROM articles a
+            JOIN categories c ON a.category_id = c.id
+            LEFT JOIN article_tags at ON a.id = at.article_id
+            LEFT JOIN tags t ON at.tag_id = t.id
+            WHERE a.status = 'soumis'
+            GROUP BY a.id ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $articlesSoumis = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Erreur lors de la récupération des articles : " . $e->getMessage());
 }

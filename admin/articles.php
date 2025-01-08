@@ -71,10 +71,8 @@ require_once __DIR__ . '/crud_articles.php';
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     <!-- Content Row -->
-
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
