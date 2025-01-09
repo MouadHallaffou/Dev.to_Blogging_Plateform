@@ -307,7 +307,7 @@ foreach ($category_stats as $stat) {
                                     <thead>
                                         <tr>
                                             <th>Title</th>
-                                            <!-- <th>Author</th> -->
+                                            <th>Author</th> 
                                             <th>Category</th>
                                             <th>Tags</th>
                                             <th>Views</th>
@@ -320,7 +320,7 @@ foreach ($category_stats as $stat) {
                                         <?php foreach ($articlesSoumis as $articlesm): ?>
                                             <tr>
                                                 <td><?= htmlspecialchars($articlesm['title']) ?></td>
-                                                <!-- <td><?= htmlspecialchars($articlesm['author_name']) ?></td> -->
+                                                <td><?= htmlspecialchars($articlesm['author_name']) ?></td> 
                                                 <td><?= htmlspecialchars($articlesm['category_name']) ?></td>
                                                 <td>
                                                     <?php
@@ -397,7 +397,7 @@ foreach ($category_stats as $stat) {
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.php">Logout</a>
+                    <a class="btn btn-primary" href="../public/Logout.php">Logout</a>
                 </div>
             </div>
         </div>

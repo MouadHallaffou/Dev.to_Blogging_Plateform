@@ -29,7 +29,7 @@ class User {
     public function setId($id){
         $this->id = $id;
     }
-    public function save(): bool {
+    public function save() {
         $query = "INSERT INTO users (username, email, password_hash) VALUES (:username, :email, :password_hash)";
         $stmt = $this->pdo->prepare($query);
 
@@ -44,7 +44,7 @@ class User {
         }
     }
 
-    public function findByEmail(string $email): ?array {
+    public function findByEmail(string $email) {
         $query = "SELECT * FROM users WHERE email = :email";
         $stmt = $this->pdo->prepare($query);
         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
@@ -53,11 +53,11 @@ class User {
             $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
         } catch (PDOException $e) {
-            throw new PDOException("Erreur lors de la récupération de l'utilisateur : " . $e->getMessage());
+            throw new PDOException("Erreur lors de la recuperation de utilisateur : " . $e->getMessage());
         }
     }
 
-    public static function hashPassword(string $password): string {
+    public static function hashPassword(string $password){
         return password_hash($password, PASSWORD_BCRYPT);
     }
 

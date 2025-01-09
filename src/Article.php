@@ -1,5 +1,4 @@
 <?php
-
 namespace Src;
 require_once __DIR__ . '/../config/Database.php';
 use App\Config\Database;
@@ -13,25 +12,27 @@ class Article{
     private $excerpt;
     private $metaDescription;
     private $categoryId;
-    private $authorId;
     private $featuredImage;
     private $scheduledDate;
     private $createdAt;
     private $updatedAt;
     private $views;
+    private $authorId;
     private static ?PDO $db = null;
 
     public function __construct(){
         self::$db = Database::connect();
     }
 
-    // Getter et Setter methods
+    // Getter et Setter 
     public function getId(){
         return $this->id;
     }
     public function setId($id){
         $this->id = $id;
     }
+
+
 
     public function getTitle(){
         return $this->title;
@@ -148,10 +149,11 @@ class Article{
             }
             $this->featuredImage = $featuredImageUrl;
         }
+
     
         // Insertion de l article dans la base de donner
-        $sql = "INSERT INTO articles (title, slug, content, excerpt, meta_description, category_id, featured_image, scheduled_date)
-                VALUES (:title, :slug, :content, :excerpt, :meta_description, :category_id, :featured_image, :scheduled_date)";
+        $sql = "INSERT INTO articles (title, slug, content, excerpt, meta_description, category_id, featured_image, scheduled_date, author_id)
+                VALUES (:title, :slug, :content, :excerpt, :meta_description, :category_id, :featured_image, :scheduled_date, :author_id)";
         $stmt = self::$db->prepare($sql);
         $stmt->bindParam(':title', $this->title);
         $stmt->bindParam(':slug', $slug);
@@ -161,6 +163,7 @@ class Article{
         $stmt->bindParam(':category_id', $this->categoryId);
         $stmt->bindParam(':featured_image', $this->featuredImage);
         $stmt->bindParam(':scheduled_date', $this->scheduledDate);
+        $stmt->bindParam(':author_id', $this->authorId);
     
         if ($stmt->execute()) {
             $articleId = self::$db->lastInsertId();
@@ -292,4 +295,25 @@ class Article{
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC); 
     }
+
+    public function getArticlesByStatus($status) {
+        $sql = "SELECT a.id AS article_id, a.title, a.slug, a.content, a.featured_image, a.excerpt, a.status, 
+                       a.meta_description, DATE(a.created_at) AS created_at, a.views,u.id_user, u.username AS author_name,
+                       c.name AS category_name, 
+                       COALESCE(GROUP_CONCAT(t.name), '') AS tags
+                FROM articles a
+                JOIN categories c ON a.category_id = c.id
+                LEFT JOIN article_tags at ON a.id = at.article_id
+                LEFT JOIN tags t ON at.tag_id = t.id
+                LEFT JOIN users u ON a.author_id = u.id_user
+                WHERE a.status = :status
+                GROUP BY a.id";
+    
+        $stmt = self::$db->prepare($sql);
+        $stmt->bindParam(':status', $status, PDO::PARAM_STR);
+        $stmt->execute();
+    
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
 }

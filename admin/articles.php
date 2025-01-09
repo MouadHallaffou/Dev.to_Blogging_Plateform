@@ -85,6 +85,7 @@ require_once __DIR__ . '/crud_articles.php';
                                         <tr>
                                             <th>ID</th>
                                             <th>Title</th>
+                                            <th>Author</th>
                                             <th>image</th>
                                             <th>Category</th>
                                             <th>Tags</th>
@@ -99,6 +100,7 @@ require_once __DIR__ . '/crud_articles.php';
                                             <tr>
                                                 <td><?= htmlspecialchars($article['article_id']) ?></td>
                                                 <td><?= htmlspecialchars($article['title']) ?></td>
+                                                <td><?= htmlspecialchars($article['author_name']) ?></td>
                                                 <td> <img src="<?= htmlspecialchars($article['featured_image']) ?>" class="article-image" alt="img" style="width: 30px; height: 30px;"></td>
                                                 <td><?= htmlspecialchars($article['category_name']) ?></td>
                                                 <td>
@@ -188,7 +190,7 @@ require_once __DIR__ . '/crud_articles.php';
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.php">Logout</a>
+                    <a class="btn btn-primary" href="../public/Logout.php">Logout</a>
                 </div>
             </div>
         </div>

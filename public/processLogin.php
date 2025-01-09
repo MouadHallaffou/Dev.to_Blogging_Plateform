@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../config/Database.php';
 require_once '../src/User.php';
 
@@ -21,9 +23,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $foundUser['id_user'];
                 $_SESSION['username'] = $foundUser['username'];
                 $_SESSION['role'] = $foundUser['role'];
-
-                header("Location: succesSignUp.php"); 
-                exit;
+                if($foundUser['role'] === 'admin'){
+                    header("Location: http://localhost/Dev.to_Blogging_Plateform/admin/dashboard.php"); 
+                    exit; 
+                }else{
+                    header("Location: succesSignUp.php"); 
+                    exit;
+                }
+               
             } else {
                 $_SESSION['error'] = 'Email ou mot de passe incorrect.';
                 header("Location: index.php");

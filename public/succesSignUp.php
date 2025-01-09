@@ -2,7 +2,6 @@
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../admin/crud_articles.php';
 require_once __DIR__ . '/crud_user.php';
-session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -46,9 +45,11 @@ session_start();
                     Log In
                 </a>
             <?php endif; ?>
-            <a href="../../Dev.to_Blogging_Plateform/admin/articles.php" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
+            <?php if($_SESSION['role'] === 'author'):?>
+                <a href="../../Dev.to_Blogging_Plateform/admin/articles.php" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
                     Add Articles
-                </a> 
+                </a>
+            <?php endif ?>    
         </nav>
     </header>
 
@@ -56,33 +57,45 @@ session_start();
         <div class="container mx-auto px-4 lg:px-8">
             <!--Grid -->
             <div class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                <?php foreach ($articles as $article) : ?>
-                    <article class="bg-gray-800 rounded-lg shadow-md overflow-hidden flex flex-col">
-                        <!--  -->
-                        <div class="p-4 flex items-center text-xs text-gray-400">
-                            <time datetime="<?= htmlspecialchars($article['created_at']) ?>">Creer le : 
-                                <?= htmlspecialchars($article['created_at']) ?>
-                            </time>
-                            <span class="ml-auto bg-gray-700 text-white rounded-full px-3 py-1">
-                                <?= htmlspecialchars($article['category_name']) ?>
-                            </span>
-                        </div>
+            <?php foreach ($articles as $article) : ?>
+                <article class="bg-gray-800 rounded-lg shadow-md overflow-hidden flex flex-col">
+                    <!-- Image de l'article -->
+                    <?php if (!empty($article['author_name'])) : ?>
+                        <img src="<?= htmlspecialchars($article['featured_image']) ?>" alt="Image de l'article : <?= htmlspecialchars($article['title']) ?>" class="w-full h-48 object-cover">
+                    <?php endif; ?>
 
-                        <!-- Content -->
-                        <div class="p-4 flex flex-col flex-grow">
-                            <h3 class="text-lg font-semibold text-gray-100 mb-2 hover:text-indigo-400">
-                                Titre : <a href="#"><?= htmlspecialchars($article['title']) ?></a>
-                            </h3>
-                            <p class="text-sm text-gray-300 mb-4 line-clamp-3">
-                                <?= htmlspecialchars($article['content']) ?>
-                            </p>
-                        </div>
+                    <!-- Métadonnées -->
+                    <div class="p-4 flex items-center text-xs text-gray-400">
+                        <time datetime="<?= htmlspecialchars($article['created_at']) ?>">Créé le : 
+                            <?= htmlspecialchars($article['created_at']) ?>
+                        </time>
+                        <span class="ml-auto bg-gray-700 text-white rounded-full px-3 py-1">
+                            <?= htmlspecialchars($article['category_name']) ?>
+                        </span>
+                    </div>
 
-                        <div class="p-4 mt-auto">
-                            <a href="#" class="text-indigo-400 font-medium hover:text-indigo-500">Read more →</a>
-                        </div>
-                    </article>
-                <?php endforeach; ?>
+                    <!-- Contenu -->
+                    <div class="p-4 flex flex-col flex-grow">
+                        <h3 class="text-lg font-semibold text-gray-100 mb-2 hover:text-indigo-400">
+                            Titre : <a href="#"><?= htmlspecialchars($article['title']) ?></a>
+                        </h3>
+                        <p class="text-sm text-gray-300 mb-4 line-clamp-3">
+                            <?= htmlspecialchars($article['content']) ?>
+                        </p>
+                    </div>
+
+                    <!-- Auteur -->
+                    <div class="p-4 flex items-center text-sm text-gray-400">
+                        <span>Auteur : </span>
+                        <span class="ml-2 text-gray-200 font-medium"><?= htmlspecialchars($article['author_name']) ?></span>
+                    </div>
+
+                    <!-- Lien -->
+                    <div class="p-4 mt-auto">
+                        <a href="#" class="text-indigo-400 font-medium hover:text-indigo-500">Read more →</a>
+                    </div>
+                </article>
+            <?php endforeach; ?>
             </div>
         </div>
     </div>

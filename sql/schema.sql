@@ -30,6 +30,7 @@ CREATE TABLE articles (
     content TEXT NOT NULL,
     excerpt TEXT,
     meta_description VARCHAR(160),
+    author_id INT ;
     category_id BIGINT NOT NULL,
     featured_image VARCHAR(255),
     status ENUM('soumis', 'accepte', 'refuse') NOT NULL DEFAULT 'soumis',
@@ -38,6 +39,7 @@ CREATE TABLE articles (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     views INTEGER DEFAULT 0,
     FOREIGN KEY (category_id) REFERENCES categories (id)
+    FOREIGN KEY (author_id) REFERENCES users (id_user)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- tags table
