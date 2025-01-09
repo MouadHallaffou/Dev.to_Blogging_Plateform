@@ -82,7 +82,6 @@ $colors = [
             <!-- Main Content -->
             <div id="content">
 
-                <?php include 'components/topbar.php'; ?>
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
@@ -236,7 +235,7 @@ $colors = [
                                         <tr>
                                             <th>ID</th>
                                             <th>Title</th>
-                                            <th>Title</th>
+                                            <th>Image</th>
                                             <th>Category</th>
                                             <th>Tags</th>
                                             <th>Views</th>

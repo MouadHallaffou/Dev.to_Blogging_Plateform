@@ -315,5 +315,17 @@ class Article{
     
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function get_top_articles($pdo){
+    $query = "select a.id, a.created_at, a.title, users.username as author_name, a.views 
+    from articles a
+    join users on a.author_id = users.id_user 
+    order by views 
+    limit 3";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $result;
+    }
     
 }

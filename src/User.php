@@ -67,4 +67,19 @@ class User {
         $stmt->bindParam(':id' , $this->id, PDO::PARAM_STR);
         $stmt->execute();
     }
+
+    public function getTopAuthors($pdo){
+        $sql = "select users.id_user as id, username, count(articles.id) as article_count, SUM(articles.views) as total_views 
+        from users 
+        join articles on users.id_user = articles.author_id 
+        where role = 'author' 
+        GROUP BY users.id_user
+        order by article_count desc 
+        limit 3";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
 }

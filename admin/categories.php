@@ -1,8 +1,9 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ .'/crud_categories.php';
+require_once __DIR__ . '/crud_articles.php';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 

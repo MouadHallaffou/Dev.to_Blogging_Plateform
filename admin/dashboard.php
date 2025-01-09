@@ -1,9 +1,13 @@
 <?php
+require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/crud_articles.php';
 require_once __DIR__ . '/crud_tags.php';
 require_once __DIR__ . '/crud_categories.php';
 require_once __DIR__ . '/../public/crud_user.php';
-
+require_once __DIR__ . '/../src/User.php';
+require_once __DIR__ . '/../src/Article.php';
+use App\Src\User;
+use Src\Article;
 // Prepare data for the chart
 $categories = [];
 $counts = [];
@@ -18,13 +22,18 @@ $colors = [
     'rgb(90, 92, 105)',     // dark
     'rgb(244, 246, 249)'    // light
 ];
-
 foreach ($category_stats as $stat) {
     $categories[] = $stat['category_name'];
     $counts[] = $stat['article_count'];
 }
-?>
 
+$topUsers = new User($pdo); 
+$top_users = $topUsers->getTopAuthors($pdo);
+
+$topArticles = new Article($pdo); 
+$top_articles = $topArticles->get_top_articles($pdo);
+         
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -171,16 +180,16 @@ foreach ($category_stats as $stat) {
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <!-- <?php foreach ($top_users as $index => $user): ?>
+                                    <?php foreach ($top_users as $index => $user): ?>
                                         <div class="d-flex align-items-center mb-3">
                                             <div class="mr-3">
                                                 <div class="icon-circle bg-primary text-white">
-                                                    <?php if ($user['profile_picture_url']): ?>
+                                                    <!-- <?php if ($user['profile_picture_url']): ?>
                                                         <img src="<?= htmlspecialchars($user['profile_picture_url']) ?>"
                                                             class="rounded-circle"
                                                             style="width: 40px; height: 40px; object-fit: cover;"
                                                             alt="<?= htmlspecialchars($user['username']) ?>">
-                                                    <?php else: ?>
+                                                    <?php else: ?> -->
                                                         <i class="fas fa-user"></i>
                                                     <?php endif; ?>
                                                 </div>
@@ -195,7 +204,7 @@ foreach ($category_stats as $stat) {
                                                 </div>
                                             </div>
                                             <div class="ml-2">
-                                                <a href="./entities/users/user-profile.php?id=<?= $user['id'] ?>"
+                                                <a href=""
                                                     class="btn btn-primary btn-sm">
                                                     View Profile
                                                 </a>
@@ -204,7 +213,7 @@ foreach ($category_stats as $stat) {
                                         <?php if ($index < count($top_users) - 1): ?>
                                             <hr>
                                         <?php endif; ?>
-                                    <?php endforeach; ?> -->
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
 

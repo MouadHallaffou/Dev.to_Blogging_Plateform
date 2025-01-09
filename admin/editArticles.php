@@ -113,7 +113,6 @@ $colors = [
             <!-- Main Content -->
             <div id="content">
 
-                <?php include 'components/topbar.php'; ?>
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">

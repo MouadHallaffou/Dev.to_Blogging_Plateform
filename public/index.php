@@ -78,7 +78,7 @@ require_once __DIR__ . '/crud_user.php';
 
                         <!-- Lien -->
                         <div class="p-4 mt-auto">
-                            <a href="#" class="text-indigo-400 font-medium hover:text-indigo-500 ">Read more →</a>
+                        <a href="views.php?id=<?= htmlspecialchars($article['article_id']) ?>" class="text-indigo-400 font-medium hover:text-indigo-500">Read more →</a>
                         </div>
                     </article>
                 <?php endforeach; ?>
